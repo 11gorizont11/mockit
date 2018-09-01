@@ -1,15 +1,15 @@
 {
-  "name": "jsninja-creation-demo",
+  "name": "mockit",
   "version": "1.0.0",
-  "description": "Demo project for stream",
+  "description": "simple mock server",
   "main": "index.js",
-  "author": "Illya Klymov <illya@javascript.ninja>",
+  "author": "Alex Olexiuk",
   "license": "MIT",
   "scripts": {
     "start": "rimraf ./dist && babel -d ./dist ./src -s && node dist/main.js",
-    "dev": "node dev.js",
+    "dev": "node index.js",
     "lint:js": "eslint ./src",
-    "lint-staged": "lint-staged"
+    "test": "mocha --require babel-register --reporter spec"
   },
   "devDependencies": {
     "babel-register": "^6.23.0",
@@ -18,10 +18,9 @@
     "eslint-config-prettier": "^1.4.1",
     "eslint-plugin-import": "^2.2.0",
     "lint-staged": "^3.3.1",
-    "pre-commit": "^1.2.2"
-  },
-  "lint-staged": {
-    "*.js": "eslint"
+    "chai": "4.1.1",
+    "chai-http": "4.2.0",
+    "mocha": "^5.2.0"
   },
   "eslintConfig": {
     "root": true,
@@ -33,11 +32,14 @@
       "node": true
     }
   },
-  "pre-commit": "lint-staged",
   "dependencies": {
     "babel-cli": "^6.23.0",
     "babel-core": "^6.23.1",
     "babel-preset-env": "^1.1.11",
+    "config": "^2.0.1",
+    "koa": "^2.5.2",
+    "koa-bodyparser": "^4.2.1",
+    "koa-router": "^7.4.0",
     "rimraf": "^2.6.1"
   },
   "babel": {
@@ -50,6 +52,8 @@
           }
         }
       ]
-    ]
+    ],
+    "sourceMap": "inline",
+    "retainLines": true
   }
 }
