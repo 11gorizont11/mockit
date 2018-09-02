@@ -3,4 +3,4 @@ dist
 npm-debug.log
 .vscode
 .nyc_output
-covarage
+coverage
