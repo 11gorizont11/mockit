@@ -1,9 +1,11 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
-chai.use(chaiHttp);
 import { server } from '../src/main';
 
-const mokedRes = {
+chai.use(chaiHttp);
+
+const testUrl = '/endpoint';
+const mockedRes = {
   statusCode: 200,
   method: 'GET',
   path: '/olol',
@@ -14,37 +16,79 @@ const mokedRes = {
 };
 
 describe('Endpoint Spec', () => {
-  let testRequester;
-  beforeEach(() => {
-    testRequester = chai.request(server).keepOpen();
-    testRequester.post('/endpoint').send(mokedRes);
-  });
-  afterEach(() => {
-    testRequester.close();
-  });
-
   it('Should return moked values', () => {
-    testRequester
-      .get(mokedRes.path)
+    chai
+      .request(server)
+      .post(testUrl)
+      .send(mockedRes)
+      .then(res => chai.request(server).get(mockedRes.path))
       .then(res => {
-        expect(res).to.have.status(mokedRes.statusCode);
-        expect(res.body).eqls(mokedRes.body);
-      })
-      .catch(err => console.error(err));
+        expect(res).to.have.status(mockedRes.statusCode);
+        expect(res.body).eqls(mockedRes.body);
+      });
   });
-
   it('Should return Error if path and method existed', () => {
-    testRequester
-      .post('/endpoint')
-      .send(mokedRes)
+    chai
+      .request(server)
+      .post(testUrl)
+      .send(mockedRes)
+      .then(res =>
+        chai
+          .request(server)
+          .post(testUrl)
+          .send(mockedRes)
+      )
       .then(res => {
         expect(res).to.have.status(405);
-        expect(res).text(
-          `Route with Path ${mokedRes.path} and Method ${
-            mokedRes.method
+        expect(res.text).eqls(
+          `Route with Path ${mockedRes.path} and Method ${
+            mockedRes.method
           } has existed already.`
         );
+      });
+  });
+  it('Service should be stopped', () => {
+    chai
+      .request(server)
+      .post(testUrl)
+      .send(mockedRes)
+      .then(res =>
+        chai
+          .request(server)
+          .delete(testUrl)
+          .send({
+            path: mockedRes.path,
+            method: mockedRes.method
+          })
+      )
+      .then(res => {
+        expect(res).to.have.status(200);
+        expect(res.text).equal('Service has been successfully stopped');
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        console.log(err);
+      });
+  });
+
+  it('Should return Error if route does not exist', () => {
+    chai
+      .request(server)
+      .post(testUrl)
+      .send(mockedRes)
+      .then(() =>
+        chai
+          .request(server)
+          .delete(testUrl)
+          .send({
+            path: '/some',
+            method: 'DELETE'
+          })
+      )
+      .then(res => {
+        expect(res).to.have.status(404);
+        expect(res.text).equal(
+          `Route with Path /some and Method DELETE not found.`
+        );
+      });
   });
 });

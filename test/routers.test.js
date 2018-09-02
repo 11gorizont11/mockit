@@ -1,14 +1,15 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
-chai.use(chaiHttp);
 import { server } from '../src/main';
+
+chai.use(chaiHttp);
 
 const mokedRes = {
   statusCode: 200,
   method: 'GET',
-  path: '/olol',
+  path: '/some-url',
   body: {
-    key: '1',
+    key: '10',
     message: 'it new'
   }
 };
@@ -28,7 +29,8 @@ describe('Server', () => {
       .post('/endpoint')
       .send(mokedRes)
       .then(res => {
-        expect(res.status).equal(200);
+        // expect(res).to.have.status(200);
+        // console.log(res.text);
         expect(res.text).equal('Endpoint created!');
       })
       .catch(err => console.error(err));
