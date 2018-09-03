@@ -4,22 +4,25 @@ export const addNewRoute = ({ router, method, statusCode, body, path }) => {
     ctx.body = body;
   };
 
+  let newRoute;
   switch (method) {
     case 'GET':
-      router.get(`${path}`, handler);
+      newRoute = router.get(`${path}`, handler);
       break;
     case 'POST':
-      router.post(`${path}`, handler);
+      newRoute = router.post(`${path}`, handler);
       break;
     case 'PUT':
-      router.put(`${path}`, handler);
+      newRoute = router.put(`${path}`, handler);
       break;
     case 'DELETE':
-      router.del(`${path}`, handler);
+      newRoute = router.del(`${path}`, handler);
       break;
     case 'PATCH':
-      router.patch(`${path}`, handler);
+      newRoute = router.patch(`${path}`, handler);
+      break;
     default:
       throw new Error(`Method ${method} not allowed.`);
   }
+  return newRoute;
 };
