@@ -40,7 +40,7 @@ describe('Endpoint Spec', () => {
       )
       .then(res => {
         expect(res).to.have.status(405);
-        expect(res.text).eqls(
+        expect(res.body.message).eqls(
           `Route with Path ${mockedRes.path} and Method ${
             mockedRes.method
           } has existed already.`
@@ -63,7 +63,7 @@ describe('Endpoint Spec', () => {
       )
       .then(res => {
         expect(res).to.have.status(200);
-        expect(res.text).equal('Service has been successfully stopped');
+        expect(res.body.message).equal('Service has been successfully stopped');
       })
       .catch(err => {
         console.log(err);
@@ -86,7 +86,7 @@ describe('Endpoint Spec', () => {
       )
       .then(res => {
         expect(res).to.have.status(404);
-        expect(res.text).equal(
+        expect(res.body.message).equal(
           `Route with Path /some and Method DELETE not found.`
         );
       });

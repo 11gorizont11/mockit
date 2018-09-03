@@ -1,28 +1,23 @@
 export const addNewRoute = ({ router, method, statusCode, body, path }) => {
+  const handler = ctx => {
+    ctx.status = statusCode;
+    ctx.body = body;
+  };
+
   switch (method) {
     case 'POST':
-      router.post(`${path}`, ctx => {
-        ctx.status = statusCode;
-        ctx.body = body;
-      });
+      router.post(`${path}`, handler);
       break;
     case 'PUT':
-      router.put(`${path}`, ctx => {
-        ctx.status = statusCode;
-        ctx.body = body;
-      });
+      router.put(`${path}`, handler);
       break;
     case 'DELETE':
-      router.put(`${path}`, ctx => {
-        ctx.status = statusCode;
-        ctx.body = body;
-      });
+      router.del(`${path}`, handler);
       break;
+    case 'PATCH':
+      router.patch(`${path}`, handler);
     default:
-      router.get(`${path}`, ctx => {
-        ctx.status = statusCode;
-        ctx.body = body;
-      });
+      router.get(`${path}`, handler);
       break;
   }
 };

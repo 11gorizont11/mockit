@@ -29,9 +29,8 @@ describe('Server', () => {
       .post('/endpoint')
       .send(mokedRes)
       .then(res => {
-        // expect(res).to.have.status(200);
-        // console.log(res.text);
-        expect(res.text).equal('Endpoint created!');
+        expect(res).to.have.status(201);
+        expect(res.body.message).equal('Endpoint created!');
       })
       .catch(err => console.error(err));
   });

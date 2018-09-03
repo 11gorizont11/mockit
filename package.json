@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start": "rimraf ./dist && babel -d ./dist ./src -s && node dist/main.js",
-    "dev": "node index.js",
+    "dev": "NODE_ENV=development node index.js",
     "lint:js": "eslint ./src",
     "test": "mocha --require babel-register --reporter spec"
   },
@@ -39,7 +39,10 @@
     "config": "^2.0.1",
     "koa": "^2.5.2",
     "koa-bodyparser": "^4.2.1",
+    "koa-logger": "^3.2.0",
+    "koa-respond": "^1.0.1",
     "koa-router": "^7.4.0",
+    "koa-static": "^5.0.0",
     "rimraf": "^2.6.1"
   },
   "babel": {
