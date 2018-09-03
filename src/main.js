@@ -5,7 +5,12 @@ import bodyParser from 'koa-bodyparser';
 import respond from 'koa-respond';
 import config from 'config';
 
-import { addNewRoute, isHasInRouter, removeRoute } from './services';
+import {
+  addNewRoute,
+  isHasInRouter,
+  removeRoute,
+  validateFields
+} from './services';
 
 const app = new Koa();
 const router = new Router();
@@ -21,7 +26,7 @@ app
       jsonLimit: '5mb',
       strict: true,
       onerror: function(err, ctx) {
-        ctx.throw('body parse error', 422);
+        ctx.throw(422, 'body parse error');
       }
     })
   )
@@ -38,15 +43,29 @@ router
     const {
       body: { method, statusCode, body, path }
     } = ctx.request;
+    const schema = {
+      statusCode: { type: 'Number', require: true },
+      path: { type: 'String', require: true },
+      method: { type: 'String', require: true },
+      body: { type: 'Object' }
+    };
+    const errors = validateFields(ctx.request.body, schema);
+
+    if (errors.length) {
+      return ctx.send(400, errors.join('\n'));
+    }
 
     if (isHasInRouter({ router, method, path })) {
-      ctx.send(
+      return ctx.send(
         405,
         `Route with Path ${path} and Method ${method} has existed already.`
       );
-    } else {
+    }
+    try {
       addNewRoute({ router, method, statusCode, body, path });
       ctx.created('Endpoint created!');
+    } catch (err) {
+      ctx.send(400, err.message);
     }
   })
   .del('/endpoint', ctx => {

@@ -5,6 +5,9 @@ export const addNewRoute = ({ router, method, statusCode, body, path }) => {
   };
 
   switch (method) {
+    case 'GET':
+      router.get(`${path}`, handler);
+      break;
     case 'POST':
       router.post(`${path}`, handler);
       break;
@@ -17,7 +20,6 @@ export const addNewRoute = ({ router, method, statusCode, body, path }) => {
     case 'PATCH':
       router.patch(`${path}`, handler);
     default:
-      router.get(`${path}`, handler);
-      break;
+      throw new Error(`Method ${method} not allowed.`);
   }
 };
