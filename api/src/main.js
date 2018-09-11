@@ -4,8 +4,8 @@ import logger from 'koa-logger';
 import bodyParser from 'koa-bodyparser';
 import respond from 'koa-respond';
 import Subdomain from 'koa-subdomain';
+import mongoose from 'mongoose';
 import config from 'config';
-
 import host from './routes/host';
 
 import {
@@ -14,6 +14,14 @@ import {
   removeRoute,
   validateFields
 } from './services';
+
+mongoose.Promise = Promise; // Ask Mongoose to use standard Promises
+mongoose.set('debug', true); // Ask Mongoose to log DB request to console
+
+mongoose.connect('mongodb://localhost:27017/mockit-api');
+
+const db = mongoose.connection;
+db.on('error', console.error);
 
 const app = new Koa();
 const subdomain = new Subdomain();
@@ -29,7 +37,7 @@ app
       enableTypes: ['json'],
       jsonLimit: '5mb',
       strict: true,
-      onerror: function(err, ctx) {
+      onerror: (err, ctx) => {
         ctx.throw(422, 'body parse error');
       }
     })
