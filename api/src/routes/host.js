@@ -7,5 +7,5 @@ const port = config.get('APP_PORT');
 const router = new Router();
 
 export default router.get('/host', ctx => {
-  ctx.body = `http://${uniqid()}.${url}:${port}`;
+  ctx.ok({ host: `http://${uniqid()}.${url}:${port}` });
 });
