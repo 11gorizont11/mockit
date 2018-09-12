@@ -7,6 +7,7 @@ import Subdomain from 'koa-subdomain';
 import mongoose from 'mongoose';
 import config from 'config';
 import host from './routes/host';
+import user from './routes/user';
 
 import {
   addNewRoute,
@@ -47,6 +48,8 @@ app
 router.get('/', ctx => {
   ctx.body = 'Hello world!!!';
 });
+
+router.use(user.routes());
 
 router.use(host.routes());
 

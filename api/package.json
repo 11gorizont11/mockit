@@ -36,6 +36,7 @@
     "babel-cli": "^6.23.0",
     "babel-core": "^6.23.1",
     "babel-preset-env": "^1.1.11",
+    "bcrypt": "^3.0.0",
     "config": "^2.0.1",
     "koa": "^2.5.2",
     "koa-bodyparser": "^4.2.1",
