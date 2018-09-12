@@ -18,7 +18,7 @@ import {
 
 mongoose.Promise = Promise; // Ask Mongoose to use standard Promises
 mongoose.set('debug', true); // Ask Mongoose to log DB request to console
-
+mongoose.set('useCreateIndex', true);
 mongoose.connect('mongodb://localhost:27017/mockit-api');
 
 const db = mongoose.connection;

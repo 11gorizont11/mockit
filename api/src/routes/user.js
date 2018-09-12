@@ -3,7 +3,4 @@ import { createUser } from '../services/user.service';
 
 const router = new Router();
 
-export default router.post('/user', (ctx, next) => {
-  console.log('BODY', ctx.request.body);
-  createUser(ctx, next);
-});
+export default router.post('/user', createUser);

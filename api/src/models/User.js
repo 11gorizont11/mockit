@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-userSchema.virtual('password').set(password => {
+userSchema.virtual('password').set(function(password) {
   this.passwordHash = hashSync(password, config.get('SALT_ROUND'));
 });
 
