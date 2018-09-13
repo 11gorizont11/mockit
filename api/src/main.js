@@ -4,29 +4,25 @@ import logger from 'koa-logger';
 import bodyParser from 'koa-bodyparser';
 import respond from 'koa-respond';
 import Subdomain from 'koa-subdomain';
-import mongoose from 'mongoose';
 import config from 'config';
+//FIXME: move to one file
 import host from './routes/host';
 import user from './routes/user';
+import auth from './routes/auth';
 
 import {
   addNewRoute,
   isHasInRouter,
   removeRoute,
   validateFields
-} from './services';
-
-mongoose.Promise = Promise; // Ask Mongoose to use standard Promises
-mongoose.set('debug', true); // Ask Mongoose to log DB request to console
-mongoose.set('useCreateIndex', true);
-mongoose.connect('mongodb://localhost:27017/mockit-api');
-
-const db = mongoose.connection;
-db.on('error', console.error);
+} from './services/helper';
 
 const app = new Koa();
 const subdomain = new Subdomain();
 const router = new Router();
+
+//connection to db
+require('./db/connection');
 
 if (process.env.NODE_ENV === 'development') {
   app.use(logger());
@@ -49,6 +45,8 @@ router.get('/', ctx => {
   ctx.body = 'Hello world!!!';
 });
 
+router.use('/auth', auth.routes());
+
 router.use(user.routes());
 
 router.use(host.routes());
@@ -58,6 +56,7 @@ router
     const {
       body: { method, statusCode, body, path, host }
     } = ctx.request;
+    //FIXME: use koa-validate mid
     const schema = {
       statusCode: { type: 'Number', require: true },
       path: { type: 'String', require: true },

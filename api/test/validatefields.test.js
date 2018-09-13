@@ -1,4 +1,4 @@
-import { validateFields } from '../src/services';
+import { validateFields } from '../src/services/helper';
 import { expect } from 'chai';
 describe('validation fields', () => {
   const testObj = {

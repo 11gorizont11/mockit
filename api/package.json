@@ -9,7 +9,7 @@
     "start": "rimraf ./dist && babel -d ./dist ./src -s && node dist/main.js",
     "dev": "NODE_ENV=development node index.js",
     "lint:js": "eslint ./src",
-    "test": "mocha --require babel-register --reporter spec"
+    "test": "NODE_ENV=test mocha --require babel-register --reporter spec"
   },
   "devDependencies": {
     "babel-register": "^6.23.0",
@@ -38,8 +38,11 @@
     "babel-preset-env": "^1.1.11",
     "bcrypt": "^3.0.0",
     "config": "^2.0.1",
+    "jsonwebtoken": "^8.3.0",
     "koa": "^2.5.2",
     "koa-bodyparser": "^4.2.1",
+    "koa-compose": "^4.1.0",
+    "koa-jwt": "^3.5.1",
     "koa-logger": "^3.2.0",
     "koa-respond": "^1.0.1",
     "koa-router": "^7.4.0",

@@ -4,7 +4,11 @@ import config from 'config';
 
 const userSchema = new mongoose.Schema(
   {
-    login: String,
+    login: {
+      type: String,
+      required: 'Login is Required',
+      unique: 'Same Login already exist'
+    },
     email: {
       type: String,
       required: 'E-mail is required',
