@@ -4,21 +4,36 @@ import { server } from '../src/main';
 
 chai.use(chaiHttp);
 
-const LOGIN_URL = 'auth/login';
-const LOGOUT_URL = 'auth/logout';
-const testUser = {
-  login: 'testUser',
-  password: 'pass1'
-};
-
 describe('Auth spec', () => {
+  const SIGN_UP_URL = 'auth/sign-up';
+  const LOGIN_URL = 'auth/login';
+  const LOGOUT_URL = 'auth/logout';
+
+  const testUser = {
+    login: 'Test User',
+    email: 'testemail@mailinator.com',
+    password: 'testPass!'
+  };
+  //FIXME: fix this test
+  it('Should create user', () => {
+    chai
+      .request(server)
+      .post(SIGN_UP_URL)
+      .send(testUser)
+      .then(res => {
+        console.log('res', res);
+        expect(res).to.have.status(200);
+        expect(res.body.token).is.not.empty();
+      })
+      .catch(console.error);
+  });
   it('Should login user', () => {
     chai
       .request(server)
       .post(LOGIN_URL)
       .send({
-        userName: 'Test',
-        password: 'testPass'
+        login: 'Test User',
+        password: 'testPass!'
       })
       .then(res => {
         console.log('Res Body', res.body);
@@ -26,15 +41,4 @@ describe('Auth spec', () => {
       })
       .catch(console.error);
   });
-  //   it('Should logout user idf user log in', () => {
-  //     chai
-  //       .request(server)
-  //       .post(LOGOUT_URL)
-  //       .send({
-  //         userName: 'Test'
-  //       })
-  //       .then(res => {
-  //         expect(res).to.have.status(200);
-  //       });
-  //   });
 });

@@ -7,7 +7,6 @@ import Subdomain from 'koa-subdomain';
 import config from 'config';
 //FIXME: move to one file
 import host from './routes/host';
-import user from './routes/user';
 import auth from './routes/auth';
 
 import {
@@ -46,8 +45,6 @@ router.get('/', ctx => {
 });
 
 router.use('/auth', auth.routes());
-
-router.use(user.routes());
 
 router.use(host.routes());
 
