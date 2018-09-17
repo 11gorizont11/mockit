@@ -4,6 +4,12 @@ import tokenGenerator from './helper/tokenGenerator';
 
 const createUser = async (ctx, next) => {
   const { login, email, password } = ctx.request.body;
+  if (!login || !email || !password) {
+    return ctx.badRequest({
+      message: 'Invalid credentials.'
+    });
+  }
+
   try {
     const user = await UserModel.create({ login, email, password });
 
