@@ -14,21 +14,28 @@ const userSchema = new mongoose.Schema(
       required: 'E-mail is required',
       unique: 'This e-mail already exist'
     },
-    passwordHash: String
+    password: {
+      type: String,
+      required: true
+    }
   },
   {
     timestamps: true
   }
 );
 
-userSchema.virtual('password').set(function(password) {
-  this.passwordHash = hashSync(password, config.get('SALT_ROUND'));
+userSchema.pre('save', function(next) {
+  const user = this;
+  if (!user.isModified('password')) return next();
+  user.password = hashSync(user.password, config.get('SALT_ROUND'));
+  next();
 });
 
-userSchema.methods.checkPassword = password => {
+userSchema.methods.checkPassword = function(password) {
   if (!password) return false;
-  if (!this.passwordHash) return false;
-  return compareSync(password, this.passwordHash);
+  if (!this.password) return false;
+
+  return compareSync(password, this.password);
 };
 
 const UserModel = mongoose.model('User', userSchema);
