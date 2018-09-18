@@ -21,7 +21,8 @@ const mockedRes = {
   path: '/olol',
   headers: [
     { 'Content-Type': 'application/json' },
-    { 'Access-Control-Allow-Origin': '*' }
+    { 'Access-Control-Allow-Origin': '*' },
+    { 'Cache-Control': 'no-cache' }
   ],
   body: {
     key: '1',
@@ -50,19 +51,21 @@ describe('Endpoint Spec', () => {
     testRes = Object.assign({}, mockedRes);
   });
 
-  it('Should add new route', () => {
+  it('Should add new route', done => {
     chai
       .request(server)
       .post(TESTED_URL)
       .set('Authorization', `Bearer ${token}`)
       .send(testRes)
       .then(res => {
+        console.log(res.body);
         expect(res).to.have.status(201);
         expect(res.body.message).equal('Endpoint created!');
+        done();
       })
       .catch(err => console.error(err));
   });
-  it('Should return error if required field is empty', () => {
+  it('Should return error if required field is empty', done => {
     chai
       .request(server)
       .post(TESTED_URL)
@@ -73,9 +76,8 @@ describe('Endpoint Spec', () => {
       })
       .then(res => {
         expect(res).to.have.status(400);
-        expect(res.body.message).equal(
-          'statusCode is required.\nbody should be Object type.'
-        );
+        expect(res.body.message).to.be.a('array').that.not.empty;
+        done();
       })
       .catch(err => console.error(err));
   });
@@ -106,7 +108,6 @@ describe('Endpoint Spec', () => {
           .set('Authorization', `Bearer ${token}`)
       )
       .then(res => {
-        console.log('res header', res.header);
         expect(res).to.have.status(mockedRes.statusCode);
         expect(res.body).eqls(mockedRes.body);
         done();

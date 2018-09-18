@@ -1,4 +1,11 @@
-export const addNewRoute = ({ router, method, statusCode, body, path }) => {
+export const addNewRoute = ({
+  router,
+  method,
+  statusCode,
+  body,
+  path,
+  headers
+}) => {
   const handler = async ctx => {
     headers.forEach(header => {
       Object.keys(header).forEach(key => {
