@@ -2,6 +2,7 @@ import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import { server } from '../src/main';
 import UserModel from '../src/models/User';
+import TokenModel from '../src/models/RefreshToken';
 
 chai.use(chaiHttp);
 
@@ -14,28 +15,46 @@ const testUser = {
 };
 
 describe('Login spec', () => {
+  let refreshToken;
   before(async () => {
     await UserModel.create(testUser);
-    done();
   });
 
   after(async () => {
     await UserModel.deleteOne({ login: testUser.login });
+    await TokenModel.deleteOne({ token: refreshToken });
   });
 
-  it('Should login user', done => {
+  it('Should login user', () => {
     chai
       .request(server)
       .post(LOGIN_URL)
       .send({
-        login: 'Test User',
-        password: 'testPass!'
+        login: testUser.login,
+        password: testUser.password
       })
       .then(res => {
+        refreshToken = res.body.refreshToken;
         expect(res).to.have.status(200);
         expect(res.body.token).to.be.a('string').that.not.empty;
         expect(res.body.refreshToken).to.be.a('string').that.not.empty;
-        done();
+      })
+      .catch(console.error);
+  });
+
+  it('Should return error if invalid creads', () => {
+    chai
+      .request(server)
+      .post(LOGIN_URL)
+      .send({
+        login: 'Wrong login',
+        password: 'Wrong pass!'
+      })
+      .then(res => {
+        expect(res).to.have.status(403);
+        expect(res.body.message).eql(
+          'Invalid credentials username or password'
+        );
       })
       .catch(console.error);
   });

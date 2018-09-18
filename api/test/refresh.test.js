@@ -7,56 +7,53 @@ import TokenModel from '../src/models/RefreshToken';
 chai.use(chaiHttp);
 
 const SIGN_UP_URL = '/auth/sign-up';
+const REFRESH_URL = '/auth/refresh';
 
 const testUser = {
-  login: 'Test User',
-  email: 'testemail@mailinator.com',
-  password: 'testPass!'
+  login: 'test refresh',
+  email: 'refresh@mailinator.com',
+  password: 'testPass1'
 };
 
-describe('Sign up spec', () => {
+describe('Refresh token spec', () => {
   let refreshToken;
   after(async () => {
     await UserModel.deleteOne({ login: testUser.login });
     await TokenModel.deleteOne({ token: refreshToken });
   });
 
-  it('Should create user', () => {
+  it('Should refresh token pair', done => {
     chai
       .request(server)
       .post(SIGN_UP_URL)
       .send(testUser)
+      .then(res =>
+        chai
+          .request(server)
+          .post(REFRESH_URL)
+          .send({
+            refreshToken: res.body.refreshToken
+          })
+      )
       .then(res => {
         refreshToken = res.body.refreshToken;
         expect(res).to.have.status(200);
         expect(res.body.token).to.be.a('string').that.not.empty;
         expect(res.body.refreshToken).to.be.a('string').that.not.empty;
-      })
-      .catch(console.error);
-  });
-
-  it('Should return error if some fields are empty', () => {
-    chai
-      .request(server)
-      .post(SIGN_UP_URL)
-      .send({ login: 'test' })
-      .then(res => {
-        expect(res).to.have.status(400);
-        expect(res.body.message).eql('Invalid credentials.');
-      })
-      .catch(console.error);
-  });
-
-  it('should return error if user already exist', done => {
-    chai
-      .request(server)
-      .post(SIGN_UP_URL)
-      .send(testUser)
-      .then(res => {
-        expect(res).to.have.status(400);
-        expect(res.body.message).eql('This user is already exist.');
         done();
+      });
+  });
+
+  it('Should return error if token invalid', () => {
+    chai
+      .request(server)
+      .post(REFRESH_URL)
+      .send({
+        refreshToken: 'INVALID_TOKEN'
       })
-      .catch(console.error);
+      .then(res => {
+        expect(res).to.have.status(404);
+        expect(res.body.message).to.be.a('string').that.not.empty;
+      });
   });
 });

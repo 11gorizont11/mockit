@@ -15,7 +15,7 @@ const createUser = async (ctx, next) => {
 
     ctx.viewUser = { login: user.login, id: user.id, email: user.email };
   } catch (err) {
-    ctx.badRequest({
+    return ctx.badRequest({
       message: 'This user is already exist.'
     });
   }

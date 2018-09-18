@@ -9,7 +9,8 @@
     "start": "rimraf ./dist && babel -d ./dist ./src -s && node dist/main.js",
     "dev": "NODE_ENV=development node index.js",
     "lint:js": "eslint ./src",
-    "test": "NODE_ENV=test mocha --require babel-register --reporter spec"
+    "test": "env NODE_ENV=test mocha --require babel-register --reporter spec",
+    "test:watch": "env NODE_ENV=test mocha --watch --colors --require babel-register --reporter spec"
   },
   "devDependencies": {
     "babel-register": "^6.23.0",
