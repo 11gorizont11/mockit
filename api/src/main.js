@@ -57,13 +57,14 @@ router.use(host.routes());
 router
   .post('/endpoint', ctx => {
     const {
-      body: { method, statusCode, body, path, host }
+      body: { method, statusCode, body, path, host, headers }
     } = ctx.request;
-    //FIXME: use koa-validate mid
+
     const schema = {
       statusCode: { type: 'Number', require: true },
       path: { type: 'String', require: true },
       method: { type: 'String', require: true },
+      headers: { type: 'Array' },
       body: { type: 'Object' }
     };
     const errors = validateFields(ctx.request.body, schema);
@@ -81,7 +82,14 @@ router
     try {
       subdomain.use(
         host,
-        addNewRoute({ router, method, statusCode, body, path }).routes()
+        addNewRoute({
+          router,
+          method,
+          statusCode,
+          body,
+          path,
+          headers
+        }).routes()
       );
       ctx.created('Endpoint created!');
     } catch (err) {

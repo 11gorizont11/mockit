@@ -19,6 +19,10 @@ const mockedRes = {
   statusCode: 200,
   method: 'GET',
   path: '/olol',
+  headers: [
+    { 'Content-Type': 'application/json' },
+    { 'Access-Control-Allow-Origin': '*' }
+  ],
   body: {
     key: '1',
     message: 'it new'
@@ -102,6 +106,7 @@ describe('Endpoint Spec', () => {
           .set('Authorization', `Bearer ${token}`)
       )
       .then(res => {
+        console.log('res header', res.header);
         expect(res).to.have.status(mockedRes.statusCode);
         expect(res.body).eqls(mockedRes.body);
         done();
