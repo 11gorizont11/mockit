@@ -2,7 +2,6 @@ import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import { server } from '../src/main';
 import UserModel from '../src/models/User';
-import TokenModel from '../src/models/RefreshToken';
 
 chai.use(chaiHttp);
 
@@ -31,7 +30,6 @@ describe('Logout spec', () => {
           .post(LOGOUT_URL)
           .set('Authorization', `Bearer ${res.body.token}`)
           .then(res => {
-            console.log('res', res.body);
             expect(res).to.have.status(200);
             done();
           })

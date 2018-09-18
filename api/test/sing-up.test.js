@@ -21,7 +21,7 @@ describe('Sign up spec', () => {
     await TokenModel.deleteOne({ token: refreshToken });
   });
 
-  it('Should create user', () => {
+  it('Should create user', done => {
     chai
       .request(server)
       .post(SIGN_UP_URL)
@@ -31,6 +31,7 @@ describe('Sign up spec', () => {
         expect(res).to.have.status(200);
         expect(res.body.token).to.be.a('string').that.not.empty;
         expect(res.body.refreshToken).to.be.a('string').that.not.empty;
+        done();
       })
       .catch(console.error);
   });

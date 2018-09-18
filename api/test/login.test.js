@@ -25,7 +25,7 @@ describe('Login spec', () => {
     await TokenModel.deleteOne({ token: refreshToken });
   });
 
-  it('Should login user', () => {
+  it('Should login user', done => {
     chai
       .request(server)
       .post(LOGIN_URL)
@@ -38,6 +38,7 @@ describe('Login spec', () => {
         expect(res).to.have.status(200);
         expect(res.body.token).to.be.a('string').that.not.empty;
         expect(res.body.refreshToken).to.be.a('string').that.not.empty;
+        done();
       })
       .catch(console.error);
   });

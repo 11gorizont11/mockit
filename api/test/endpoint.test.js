@@ -60,7 +60,7 @@ describe('Endpoint Spec', () => {
         expect(res.body.message).equal(`Method ${testRes.method} not allowed.`);
       });
   });
-  it('Should return moked values', () => {
+  it('Should return moked values', done => {
     chai
       .request(server)
       .post(TESTED_URL)
@@ -69,6 +69,7 @@ describe('Endpoint Spec', () => {
       .then(res => {
         expect(res).to.have.status(mockedRes.statusCode);
         expect(res.body).eqls(mockedRes.body);
+        done();
       });
   });
   it('Should return Error if path and method existed', () => {
