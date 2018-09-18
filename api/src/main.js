@@ -2,6 +2,7 @@ import Koa from 'koa';
 import Router from 'koa-router';
 import logger from 'koa-logger';
 import bodyParser from 'koa-bodyparser';
+import jwtMiddleware from 'koa-jwt';
 import respond from 'koa-respond';
 import Subdomain from 'koa-subdomain';
 import config from 'config';
@@ -46,6 +47,11 @@ router.get('/', ctx => {
 
 router.use('/auth', auth.routes());
 
+router.use(
+  jwtMiddleware({
+    secret: config.get('SECRET_JWT')
+  })
+);
 router.use(host.routes());
 
 router
