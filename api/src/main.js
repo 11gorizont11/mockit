@@ -38,7 +38,7 @@ app
   .use(respond());
 
 router.get('/', ctx => {
-  ctx.body = 'Hello world!!!';
+  ctx.body = 'Hello from mockit API!!!';
 });
 
 router.use('/auth', auth.routes());
@@ -51,7 +51,13 @@ router.use(
 
 router.use(host.routes());
 
-router.post('/endpoint', newRouteHandler).del('/endpoint', deleteRouteHandler);
+router
+  .post('/endpoint', async (ctx, next) => {
+    await newRouteHandler(ctx, router, subdomain);
+  })
+  .del('/endpoint', async (ctx, next) => {
+    await deleteRouteHandler(ctx, router, subdomain);
+  });
 
 app
   .use(subdomain.routes())

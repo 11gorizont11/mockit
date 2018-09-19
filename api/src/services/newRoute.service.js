@@ -1,11 +1,6 @@
-import Subdomain from 'koa-subdomain';
-import Router from 'koa-router';
 import RouteModel from '../models/Route';
 
 import { addNewRoute, isHasInRouter, validateFields } from './helper';
-
-const router = new Router();
-const subdomain = new Subdomain();
 
 const schema = {
   statusCode: { type: 'Number', require: true },
@@ -15,7 +10,7 @@ const schema = {
   body: { type: 'Object' }
 };
 
-const newRouteHandler = async ctx => {
+const newRouteHandler = async (ctx, router, subdomain) => {
   const {
     body: { method, statusCode, body, path, host, headers }
   } = ctx.request;
@@ -37,7 +32,6 @@ const newRouteHandler = async ctx => {
 
   try {
     const newRoute = addNewRoute({
-      router,
       method,
       statusCode,
       body,
@@ -45,16 +39,23 @@ const newRouteHandler = async ctx => {
       headers
     });
 
-    subdomain.use(host, newRoute.routes());
-
-    await RouteModel.create({
-      route: JSON.stringify(newRoute),
+    const dbRouter = await RouteModel.create({
+      route: JSON.stringify(ctx.request.body),
       userId
     });
 
-    ctx.created('Endpoint created!');
+    if (!dbRouter) {
+      return ctx.internalServerError('Oops... something went wrong.');
+    }
+
+    subdomain.use(host, newRoute.routes());
+
+    return ctx.created({
+      message: 'Endpoint created!',
+      routeId: dbRouter.id
+    });
   } catch (err) {
-    ctx.send(400, err.message);
+    return ctx.send(400, err.message);
   }
 };
 

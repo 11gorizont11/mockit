@@ -15,7 +15,7 @@ const testUser = {
   password: 'testPass1'
 };
 const mockedRes = {
-  host: 'demo123',
+  host: '',
   statusCode: 200,
   method: 'GET',
   path: '/olol',
@@ -43,6 +43,14 @@ describe('Endpoint Spec', () => {
       .then(res => {
         token = res.body.token;
         refreshToken = res.body.refreshToken;
+        return chai
+          .request(server)
+          .get('/host')
+          .set('Authorization', `Bearer ${token}`);
+      })
+      .then(res => {
+        console.log('host', res.body.host);
+        mockedRes.host = res.body.host;
         done();
       });
   });
@@ -58,14 +66,14 @@ describe('Endpoint Spec', () => {
       .set('Authorization', `Bearer ${token}`)
       .send(testRes)
       .then(res => {
-        console.log(res.body);
         expect(res).to.have.status(201);
         expect(res.body.message).equal('Endpoint created!');
         done();
       })
       .catch(err => console.error(err));
   });
-  it('Should return error if required field is empty', done => {
+
+  it('Should return error if required field is empty ot have wrong type', done => {
     chai
       .request(server)
       .post(TESTED_URL)
@@ -82,7 +90,7 @@ describe('Endpoint Spec', () => {
       .catch(err => console.error(err));
   });
 
-  it('Should return Error if method not allowed', () => {
+  it('Should return Error if method not allowed', done => {
     testRes.method = 'OLOLO';
     chai
       .request(server)
@@ -92,21 +100,16 @@ describe('Endpoint Spec', () => {
       .then(res => {
         expect(res).to.have.status(400);
         expect(res.body.message).equal(`Method ${testRes.method} not allowed.`);
+        done();
       })
       .catch(err => console.error(err));
   });
-  it('Should return moked values', done => {
+
+  it('Should return mocked values', done => {
     chai
       .request(server)
-      .post(TESTED_URL)
+      .get(testRes.path)
       .set('Authorization', `Bearer ${token}`)
-      .send(testRes)
-      .then(res =>
-        chai
-          .request(server)
-          .get(mockedRes.path)
-          .set('Authorization', `Bearer ${token}`)
-      )
       .then(res => {
         expect(res).to.have.status(mockedRes.statusCode);
         expect(res.body).eqls(mockedRes.body);
@@ -114,6 +117,7 @@ describe('Endpoint Spec', () => {
       })
       .catch(err => console.error(err));
   });
+
   it('Should return Error if path and method existed', done => {
     chai
       .request(server)
@@ -138,23 +142,26 @@ describe('Endpoint Spec', () => {
       })
       .catch(err => console.error(err));
   });
+
   it('Service should be stopped', done => {
+    testRes.path = '/wowow';
     chai
       .request(server)
       .post(TESTED_URL)
       .set('Authorization', `Bearer ${token}`)
       .send(testRes)
-      .then(res =>
-        chai
+      .then(res => {
+        return chai
           .request(server)
           .delete(TESTED_URL)
           .set('Authorization', `Bearer ${token}`)
           .send({
-            host: mockedRes.host,
-            path: mockedRes.path,
-            method: mockedRes.method
-          })
-      )
+            host: testRes.host,
+            path: testRes.path,
+            method: testRes.method,
+            routeId: res.body.routeId
+          });
+      })
       .then(res => {
         expect(res).to.have.status(200);
         expect(res.body.message).equal('Service has been successfully stopped');
@@ -163,27 +170,23 @@ describe('Endpoint Spec', () => {
       .catch(err => console.error(err));
   });
 
-  it('Should return Error if route does not exist', () => {
+  it('Should return Error if route does not exist', done => {
     chai
       .request(server)
-      .post(TESTED_URL)
+      .delete(TESTED_URL)
       .set('Authorization', `Bearer ${token}`)
-      .send(testRes)
-      .then(() =>
-        chai
-          .request(server)
-          .delete(TESTED_URL)
-          .set('Authorization', `Bearer ${token}`)
-          .send({
-            path: '/some',
-            method: 'DELETE'
-          })
-      )
+      .send({
+        path: '/some',
+        method: 'DELETE',
+        host: testRes.host,
+        routeId: 'ololo'
+      })
       .then(res => {
         expect(res).to.have.status(404);
         expect(res.body.message).equal(
           `Route with Path /some and Method DELETE not found.`
         );
+        done();
       })
       .catch(err => console.error(err));
   });

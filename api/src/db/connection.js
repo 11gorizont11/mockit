@@ -10,7 +10,6 @@ if (env === 'development') {
 }
 mongoose.set('useCreateIndex', true);
 
-console.log('MONGO', config.get(`${env}.MONGO_URL`));
 mongoose.connect(
   config.get(`${env}.MONGO_URL`),
   { useNewUrlParser: true }

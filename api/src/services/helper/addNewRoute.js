@@ -1,11 +1,8 @@
-export const addNewRoute = ({
-  router,
-  method,
-  statusCode,
-  body,
-  path,
-  headers
-}) => {
+import Router from 'koa-router';
+
+const router = new Router();
+
+export const addNewRoute = ({ method, statusCode, body, path, headers }) => {
   const handler = async ctx => {
     headers.forEach(header => {
       Object.keys(header).forEach(key => {

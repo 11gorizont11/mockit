@@ -10,7 +10,7 @@ describe('Server', () => {
       .request(server)
       .get('/')
       .then(res => {
-        expect(res.text).equal('Hello world!!!');
+        expect(res.text).equal('Hello from mockit API!!!');
       })
       .catch(err => console.error(err));
   });
