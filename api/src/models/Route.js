@@ -1,12 +1,17 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 const routeSchema = new mongoose.Schema(
   {
-    route: {
+    host: {
       type: String,
       required: true
     },
-    userId: String
+    statusCode: Number,
+    method: String,
+    path: String,
+    headers: [Schema.Types.Mixed],
+    userId: String,
+    body: String
   },
   {
     timestamps: true

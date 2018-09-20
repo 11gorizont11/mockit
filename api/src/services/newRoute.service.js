@@ -22,8 +22,8 @@ const newRouteHandler = async (ctx, router, subdomain) => {
   if (errors.length) {
     return ctx.send(400, { message: errors });
   }
-
-  if (isHasInRouter({ subdomain, host, router, method, path })) {
+  // FIXME: fix logic
+  if (isHasInRouter({ subdomain, host, method, path })) {
     return ctx.send(
       405,
       `Route with Path ${path} and Method ${method} has existed already.`
@@ -32,6 +32,7 @@ const newRouteHandler = async (ctx, router, subdomain) => {
 
   try {
     const newRoute = addNewRoute({
+      host,
       method,
       statusCode,
       body,
@@ -40,7 +41,12 @@ const newRouteHandler = async (ctx, router, subdomain) => {
     });
 
     const dbRouter = await RouteModel.create({
-      route: JSON.stringify(ctx.request.body),
+      host,
+      statusCode,
+      method,
+      path,
+      headers,
+      body: JSON.stringify(body),
       userId
     });
 

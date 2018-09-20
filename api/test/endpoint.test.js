@@ -1,8 +1,10 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
+import config from 'config';
 import { server } from '../src/main';
 import UserModel from '../src/models/User';
 import TokenModel from '../src/models/RefreshToken';
+import RouteModel from '../src/models/Route';
 
 chai.use(chaiHttp);
 
@@ -49,7 +51,6 @@ describe('Endpoint Spec', () => {
           .set('Authorization', `Bearer ${token}`);
       })
       .then(res => {
-        console.log('host', res.body.host);
         mockedRes.host = res.body.host;
         done();
       });
@@ -109,7 +110,10 @@ describe('Endpoint Spec', () => {
     chai
       .request(server)
       .get(testRes.path)
-      .set('Authorization', `Bearer ${token}`)
+      .set(
+        'X-Forwarded-Host',
+        `${testRes.host}.${config.get('APP_HOST')}:${config.get('HTTP_PORT')}`
+      )
       .then(res => {
         expect(res).to.have.status(mockedRes.statusCode);
         expect(res.body).eqls(mockedRes.body);
@@ -194,5 +198,9 @@ describe('Endpoint Spec', () => {
   after(async () => {
     await UserModel.deleteOne({ login: testUser.login });
     await TokenModel.deleteOne({ token: refreshToken });
+    await RouteModel.findOneAndRemove({
+      host: testRes.host,
+      path: testRes.path
+    });
   });
 });

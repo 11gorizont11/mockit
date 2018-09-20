@@ -10,11 +10,9 @@ const deleteRouteHandler = async (ctx, router, subdomain) => {
 
   const { id: userId } = ctx.state.user;
 
-  if (isHasInRouter({ subdomain, host, router, method, path })) {
-    removeRoute({ subdomain, host, router, method, path });
+  if (isHasInRouter({ subdomain, host, method, path })) {
+    removeRoute({ subdomain, host, method, path });
     try {
-      const s = await RouteModel.findById(routeId);
-
       await RouteModel.deleteOne({
         _id: routeId,
         userId

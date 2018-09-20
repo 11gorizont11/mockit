@@ -6,12 +6,13 @@ import jwtMiddleware from 'koa-jwt';
 import respond from 'koa-respond';
 import Subdomain from 'koa-subdomain';
 import config from 'config';
-// FIXME: move to one file
+
 import host from './routes/host';
 import auth from './routes/auth';
-// FIXME: move to one file
+
 import newRouteHandler from './services/newRoute.service';
 import deleteRouteHandler from './services/deleteRoute.service';
+import renewRoutes from './services/renewRoutes.service';
 
 const app = new Koa();
 const subdomain = new Subdomain();
@@ -20,8 +21,15 @@ const router = new Router();
 // connection to db
 require('./db/connection');
 
-if (process.env.NODE_ENV === 'development') {
+const env = process.env.NODE_ENV;
+
+if (env === 'development') {
   app.use(logger());
+}
+
+if (env !== 'production') {
+  // for proper subdomain detection fix fot localhost:port
+  app.subdomainOffset = 1;
 }
 
 app
@@ -64,6 +72,9 @@ app
   .use(router.routes())
   .use(router.allowedMethods());
 
-export const server = app.listen(config.get('APP_PORT'), () => {
-  console.log(`Server listening on port: ${config.get('APP_PORT')}`);
+app.proxy = true;
+
+export const server = app.listen(config.get('HTTP_PORT'), () => {
+  renewRoutes(subdomain);
+  console.log(`Server listening on port: ${config.get('HTTP_PORT')}`);
 });

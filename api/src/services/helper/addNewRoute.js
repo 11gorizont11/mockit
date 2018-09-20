@@ -9,6 +9,7 @@ export const addNewRoute = ({ method, statusCode, body, path, headers }) => {
         ctx.set(key, header[key]);
       });
     });
+
     ctx.status = statusCode;
     ctx.body = body;
   };
