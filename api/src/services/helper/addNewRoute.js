@@ -1,14 +1,9 @@
-export const addNewRoute = ({ router, method, statusCode, body, path }) => {
-  const handler = async ctx => {
-    headers.forEach(header => {
-      Object.keys(header).forEach(key => {
-        ctx.set(key, header[key]);
-      });
-    });
-    ctx.status = statusCode;
-    ctx.body = body;
-  };
+import Router from 'koa-router';
+import handler from './subdomainHandler';
 
+const router = new Router();
+
+export const addNewRoute = ({ method, statusCode, body, path, headers }) => {
   let newRoute;
   switch (method) {
     case 'GET':

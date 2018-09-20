@@ -2,16 +2,14 @@
 
 #### scripts for pun project:
 
+## Before you start run db service
+
 ```bash
-npm start
+docker-compose up --build db
 ```
+
+## Run api server
 
 ```bash
 npm run dev
-```
-
-get all docker IPs
-
-```bash
-docker inspect -f '{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -aq)
 ```

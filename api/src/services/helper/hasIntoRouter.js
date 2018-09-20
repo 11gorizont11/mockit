@@ -1,12 +1,19 @@
-export const isHasInRouter = ({ subdomain, host, router, method, path }) => {
-  let hasSub;
-  if (subdomain.subs.length) {
-    hasSub = subdomain.subs.map(sub => sub.includes(host)).some(item => item);
+export const isHasInRouter = ({ subdomain, host, method, path }) => {
+  // FIXME: very dumb checking logic  add
+  const hasSubDomain = subdomain.subs
+    .map(sub => sub.includes(host))
+    .some(item => item);
+
+  let subs = false;
+  if (hasSubDomain) {
+    subdomain.middlewares.forEach(mid =>
+      mid.router.stack.forEach(route => {
+        if (route.methods.includes(method) && route.path === path) {
+          subs = true;
+        }
+      })
+    );
   }
-  return (
-    hasSub &&
-    router.stack.some(
-      item => item.path === path && item.methods.includes(method)
-    )
-  );
+
+  return hasSubDomain && subs;
 };

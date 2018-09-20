@@ -6,26 +6,30 @@ import jwtMiddleware from 'koa-jwt';
 import respond from 'koa-respond';
 import Subdomain from 'koa-subdomain';
 import config from 'config';
-//FIXME: move to one file
+
 import host from './routes/host';
 import auth from './routes/auth';
 
-import {
-  addNewRoute,
-  isHasInRouter,
-  removeRoute,
-  validateFields
-} from './services/helper';
+import newRouteHandler from './services/newRoute.service';
+import deleteRouteHandler from './services/deleteRoute.service';
+import renewRoutes from './services/renewRoutes.service';
 
 const app = new Koa();
 const subdomain = new Subdomain();
 const router = new Router();
 
-//connection to db
+// connection to db
 require('./db/connection');
 
-if (process.env.NODE_ENV === 'development') {
+const env = process.env.NODE_ENV;
+
+if (env === 'development') {
   app.use(logger());
+}
+
+if (env !== 'production') {
+  // for proper subdomain detection fix fot localhost:port
+  app.subdomainOffset = 1;
 }
 
 app
@@ -42,7 +46,7 @@ app
   .use(respond());
 
 router.get('/', ctx => {
-  ctx.body = 'Hello world!!!';
+  ctx.body = 'Hello from mockit API!!!';
 });
 
 router.use('/auth', auth.routes());
@@ -52,58 +56,15 @@ router.use(
     secret: config.get('SECRET_JWT')
   })
 );
+
 router.use(host.routes());
 
 router
-  .post('/endpoint', ctx => {
-    const {
-      body: { method, statusCode, body, path, host, headers }
-    } = ctx.request;
-
-    const schema = {
-      statusCode: { type: 'Number', require: true },
-      path: { type: 'String', require: true },
-      method: { type: 'String', require: true },
-      headers: { type: 'Array' },
-      body: { type: 'Object' }
-    };
-    const errors = validateFields(ctx.request.body, schema);
-
-    if (errors.length) {
-      return ctx.send(400, errors.join('\n'));
-    }
-
-    if (isHasInRouter({ subdomain, host, router, method, path })) {
-      return ctx.send(
-        405,
-        `Route with Path ${path} and Method ${method} has existed already.`
-      );
-    }
-    try {
-      subdomain.use(
-        host,
-        addNewRoute({
-          router,
-          method,
-          statusCode,
-          body,
-          path,
-          headers
-        }).routes()
-      );
-      ctx.created('Endpoint created!');
-    } catch (err) {
-      ctx.send(400, err.message);
-    }
+  .post('/endpoint', async (ctx, next) => {
+    await newRouteHandler(ctx, router, subdomain);
   })
-  .del('/endpoint', ctx => {
-    const { path, method, host } = ctx.request.body;
-    if (isHasInRouter({ subdomain, host, router, method, path })) {
-      removeRoute({ subdomain, host, router, method, path });
-      ctx.ok('Service has been successfully stopped');
-    } else {
-      ctx.notFound(`Route with Path ${path} and Method ${method} not found.`);
-    }
+  .del('/endpoint', async (ctx, next) => {
+    await deleteRouteHandler(ctx, router, subdomain);
   });
 
 app
@@ -111,6 +72,9 @@ app
   .use(router.routes())
   .use(router.allowedMethods());
 
-export const server = app.listen(config.get('APP_PORT'), () => {
-  console.log(`Server listening on port: ${config.get('APP_PORT')}`);
+app.proxy = true;
+
+export const server = app.listen(config.get('HTTP_PORT'), () => {
+  renewRoutes(subdomain);
+  console.log(`Server listening on port: ${config.get('HTTP_PORT')}`);
 });
