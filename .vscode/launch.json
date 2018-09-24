@@ -5,6 +5,22 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "version": "0.2.0",
+      "configurations": [
+        {
+          "type": "chrome",
+          "request": "launch",
+          "name": "vuejs: chrome",
+          "url": "http://localhost:8080",
+          "webRoot": "${workspaceFolder}/web/src",
+          "breakOnLoad": true,
+          "sourceMapPathOverrides": {
+            "webpack://web/src/*": "${webRoot}/*"
+          }
+        }
+      ]
+    },
+    {
       "type": "node",
       "request": "launch",
       "name": "Mocha Tests",
