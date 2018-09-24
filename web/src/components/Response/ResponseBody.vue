@@ -1,5 +1,5 @@
 <template>
-  <vue-json-editor v-model="json" :mode="'code'" :show-btns="false" @json-change="onJsonChange"></vue-json-editor>
+  <vue-json-editor v-model="json" :mode="'code'" :show-btns="false" @json-change="onJsonChange" @has-error="onError"></vue-json-editor>
 </template>
 
 <script>
@@ -9,7 +9,7 @@ export default {
   name: "ResponseBody",
   data() {
     return {
-      json: [{ name: "Dirk", age: 1234 }, { name: "Jason" }]
+      json: {}
     };
   },
 
@@ -20,6 +20,9 @@ export default {
   methods: {
     onJsonChange(value) {
       console.log("value:", value);
+    },
+    onError() {
+      console.log("Error parse");
     }
   }
 };
