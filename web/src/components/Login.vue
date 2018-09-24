@@ -1,7 +1,7 @@
 <template>
   <el-row :gutter="12">
     <el-col :span="8" :offset="8">
-      <h2 class="text-center" v-html="msg"> </h2>
+      <h2 class="text-center" v-html="title"> </h2>
       <el-card shadow="always" class="text-center">
         <el-form :model="loginForm" status-icon :rules="rules" ref="loginForm">
           <el-form-item label="Login name" prop="login">
@@ -23,7 +23,7 @@ export default {
   name: "Login",
   data() {
     return {
-      msg: "Login",
+      title: "Login",
       loginForm: {
         login: "",
         password: ""

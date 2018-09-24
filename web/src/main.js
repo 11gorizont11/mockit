@@ -1,7 +1,7 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue';
-import { Button, Input, Card, Loading, Form, FormItem, Row, Col, Container } from 'element-ui';
+import { Button, Input, Card, Loading, Form, FormItem, Row, Col, Container, Tabs, TabPane, Select, Option, Table, TableColumn } from 'element-ui';
 import App from './App';
 import router from './router';
 
@@ -13,7 +13,12 @@ Vue.use(Input);
 Vue.use(Card);
 Vue.use(Form);
 Vue.use(FormItem);
-
+Vue.use(Tabs);
+Vue.use(TabPane);
+Vue.use(Select);
+Vue.use(Option);
+Vue.use(Table);
+Vue.use(TableColumn);
 Vue.use(Loading.directive);
 
 
