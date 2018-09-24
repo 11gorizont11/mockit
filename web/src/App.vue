@@ -13,7 +13,8 @@ export default {
 <style lang="scss">
 @import url("//unpkg.com/element-ui@2.4.7/lib/theme-chalk/index.css");
 #app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB,
+    Microsoft YaHei, SimSun, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
