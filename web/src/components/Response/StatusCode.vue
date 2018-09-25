@@ -1,5 +1,5 @@
 <template>
-  <el-select v-model="value" placeholder="Select Status Code" size="large">
+  <el-select v-model.number="value" placeholder="Select Status Code" size="large">
     <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
     </el-option>
   </el-select>
@@ -25,7 +25,7 @@ export default {
   },
   watch: {
     value(val) {
-      this.$emit("update:statusCode", val);
+      this.$emit("update:code", val);
     }
   }
 };

@@ -73,3 +73,4 @@ export default class ApiService {
     this.client.delete(url, payload).then(({ data }) => data);
   };
 }
+

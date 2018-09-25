@@ -1,34 +1,43 @@
-  <template>
-  <el-table :data="tableData" :fit="true">
-    <el-table-column prop="date" label="Date">
-    </el-table-column>
-    <el-table-column prop="name" label="Name">
-    </el-table-column>
-  </el-table>
+<template>
+  <ul class="headers-list">
+    <li>
+      <span class="headers__input-control el-input__inner">Key</span>
+      <span class="headers__input-control el-input__inner">Value</span>
+    </li>
+    <li v-for="item in headers" :key="item.id">
+      <input type="text" class="headers__input-control el-input__inner" v-model.lazy="item.key">
+      <input type="text" class="headers__input-control el-input__inner" v-model.lazy="item.value">
+    </li>
+  </ul>
 </template>
 
 <script>
 export default {
+  props: {
+    headers: Array,
+    required: true
+  },
   data() {
-    return {
-      tableData: [
-        {
-          date: "2016-05-03",
-          name: "Tom"
-        },
-        {
-          date: "2016-05-02",
-          name: "Tom"
-        }
-      ]
-    };
+    return {};
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.el-table {
+.headers-list {
   text-align: left;
-  margin-bottom: 16px;
+  margin: 0 0 16px 0;
+  list-style: none;
+  padding: 0;
+  li {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #ebeef5;
+    margin: 8px 0;
+  }
+}
+.headers__input-control {
+  width: 50%;
+  border: none;
 }
 </style>
