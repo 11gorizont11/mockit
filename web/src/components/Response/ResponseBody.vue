@@ -7,6 +7,10 @@ import vueJsonEditor from "vue-json-editor";
 
 export default {
   name: "ResponseBody",
+
+  props: {
+    body: Object
+  },
   data() {
     return {
       json: {}
@@ -19,7 +23,7 @@ export default {
 
   methods: {
     onJsonChange(value) {
-      console.log("value:", value);
+      this.$emit("update:body", value);
     },
     onError() {
       console.log("Error parse");
@@ -27,3 +31,10 @@ export default {
   }
 };
 </script>
+
+
+<style lang="scss">
+.jsoneditor-vue {
+  margin-bottom: 16px;
+}
+</style>

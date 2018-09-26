@@ -24,8 +24,8 @@ export default {
     };
   },
   watch: {
-    value(val) {
-      this.$emit("update:code", val);
+    value(code) {
+      this.$emit("update:statusCode", code);
     }
   }
 };
