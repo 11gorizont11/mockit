@@ -66,6 +66,18 @@
       "console": "internalConsole",
       "sourceMaps": true,
       "outFiles": []
+    },
+    {
+      "type": "chrome",
+      "request": "attach",
+      "name": "Attach Karma Chrome",
+      "address": "localhost",
+      "port": 9333,
+      "sourceMaps": true,
+      "pathMapping": {
+        "/": "${workspaceRoot}/web",
+        "/base/": "${workspaceRoot}/web/"
+      }
     }
   ]
 }

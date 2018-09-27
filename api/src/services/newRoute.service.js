@@ -10,7 +10,7 @@ const schema = {
   body: { type: 'Object' }
 };
 
-const newRouteHandler = async (ctx, router, subdomain) => {
+const newRouteHandler = async (ctx, subdomain) => {
   const {
     body: { method, statusCode, body, path, host, headers }
   } = ctx.request;
@@ -32,12 +32,8 @@ const newRouteHandler = async (ctx, router, subdomain) => {
 
   try {
     const newRoute = addNewRoute({
-      host,
       method,
-      statusCode,
-      body,
       path,
-      headers
     });
 
     const dbRouter = await RouteModel.create({

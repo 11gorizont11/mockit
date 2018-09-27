@@ -5,7 +5,6 @@ import { Button, Input, Card, Loading, Form, FormItem, Row, Col, Container, Tabs
 import ApiService from './services/api.service';
 import App from './App';
 import router from './router';
-import store from './store';
 
 Vue.use(Container);
 Vue.use(Row);
@@ -25,11 +24,10 @@ Vue.use(Loading.directive);
 
 Vue.config.productionTip = false;
 
-Vue.prototype.$http = new ApiService()
+Vue.prototype.$http = new ApiService();
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
-  store,
   render: h => h(App)
 });

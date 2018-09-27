@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
@@ -11,7 +11,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import url("//unpkg.com/element-ui@2.4.7/lib/theme-chalk/index.css");
 #app {
   font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB,
     Microsoft YaHei, SimSun, sans-serif;
@@ -23,5 +22,13 @@ export default {
 
 .text-center {
   text-align: center !important;
+}
+
+.link-to {
+  font-size: 12px;
+  color: #409eff;
+  text-decoration: none;
+  display: block;
+  margin-bottom: 16px;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <el-row :gutter="12">
-    <el-col :span="8" :offset="8">
+    <el-col :xs="{span: 22, offset: 1 }" :sm="{span: 14, offset: 5}" :md="{span: 8, offset: 8}" :lg="{span: 6, offset:9}">
       <h2 class="text-center" v-html="title"> </h2>
       <el-card shadow="always" class="text-center">
         <el-form :model="signUpForm" status-icon :rules="rules" ref="signUpForm">
@@ -14,6 +14,7 @@
             <el-input type="password" v-model="signUpForm.password" autocomplete="off"></el-input>
           </el-form-item>
         </el-form>
+        <router-link class="link-to" to="/login">Nooo, I have account, login me!</router-link>
         <el-button type="primary" @click="submitForm('signUpForm')">Sign up me now!</el-button>
       </el-card>
     </el-col>

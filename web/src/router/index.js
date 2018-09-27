@@ -4,8 +4,20 @@ import HelloWorld from '@/components/HelloWorld';
 import Login from '@/components/Login';
 import SignUp from '@/components/SignUp';
 import Mockit from '@/components/Mockit';
+import getUserCreds from '../helpers/getUserCreds';
 
 Vue.use(Router);
+
+function requireAuth(to, from, next) {
+  if (getUserCreds() === null) {
+    next({
+      path: '/login',
+      query: { redirect: to.fullPath }
+    })
+  } else {
+    next()
+  }
+}
 
 export default new Router({
   routes: [
@@ -28,6 +40,7 @@ export default new Router({
       path: '/mockit',
       name: 'Mockit',
       component: Mockit,
+      beforeEnter: requireAuth
     }
   ],
 });

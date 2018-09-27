@@ -1,4 +1,4 @@
-import ApiService from "../../../src/services/api"
+import ApiService from "../../../src/services/api.service"
 
 
 
@@ -11,10 +11,9 @@ describe('Api service spec', () => {
   }
 
 
-  it('Should sign-up user', (done) => {
+  it('Should sign-up user', () => {
     api.signUp(testUser).then(res => {
       console.log("data", res)
-      done()
     })
   });
 

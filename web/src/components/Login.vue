@@ -1,6 +1,6 @@
 <template>
   <el-row :gutter="12">
-    <el-col :span="8" :offset="8">
+    <el-col :xs="{span: 22, offset: 1 }" :sm="{span: 14, offset: 5}" :md="{span: 8, offset: 8}" :lg="{span: 6, offset:9}">
       <h2 class="text-center" v-html="title"> </h2>
       <el-card shadow="always" class="text-center">
         <el-form :model="loginForm" status-icon :rules="rules" ref="loginForm">
@@ -11,6 +11,7 @@
             <el-input type="password" v-model="loginForm.password" autocomplete="off"></el-input>
           </el-form-item>
         </el-form>
+        <router-link class="link-to" to="/sign-up">I wanna new account</router-link>
         <el-button type="primary" @click="submitForm('loginForm')">Login me!</el-button>
       </el-card>
     </el-col>
@@ -42,10 +43,14 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          console.log("submit!!!", {
-            login: this.loginForm.login,
-            password: this.loginForm.password
-          });
+          this.$http
+            .login({
+              login: this.loginForm.login,
+              password: this.loginForm.password
+            })
+            .then(() => {
+              this.$router.push("mockit");
+            });
         } else {
           console.error("erroor!!!");
         }

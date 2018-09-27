@@ -61,10 +61,10 @@ router.use(host.routes());
 
 router
   .post('/endpoint', async (ctx, next) => {
-    await newRouteHandler(ctx, router, subdomain);
+    await newRouteHandler(ctx, subdomain);
   })
   .del('/endpoint', async (ctx, next) => {
-    await deleteRouteHandler(ctx, router, subdomain);
+    await deleteRouteHandler(ctx, subdomain);
   });
 
 app

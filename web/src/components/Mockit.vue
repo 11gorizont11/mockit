@@ -3,9 +3,16 @@
     <el-col :xs="24" :sm="{span: 22, offset: 1}" :md="{span: 18, offset: 3}" :lg="{span: 14, offset:5}">
       <h2 class="text-center" v-html="title"> </h2>
       <el-card shadow="always" class="text-center">
-        <el-input placeholder="Please input mock url" v-model="stub.path">
-          <template slot="prepend">http://localhost:4000/</template>
-        </el-input>
+        <div class="group">
+          <el-select v-model="stub.method" placeholder="Select">
+            <el-option v-for="item in requestMethods" :key="item" :label="item" :value="item">
+            </el-option>
+          </el-select>
+          <el-input placeholder="Please input mock url" v-model="stub.path">
+            <template slot="prepend">http://{{stub.host}}.localhost:4000/</template>
+          </el-input>
+        </div>
+
         <el-tabs v-model="activeTab">
           <el-tab-pane label="Status Code" name="code">
             <status-code v-bind:statusCode.sync="stub.statusCode" />
@@ -18,8 +25,8 @@
           </el-tab-pane>
         </el-tabs>
         <div class="actions">
-          <el-button type="success" @click="handleStart" plain>Start</el-button>
-          <el-button type="danger" plain v-show="servingRouteId">Stop</el-button>
+          <el-button type="success" :loading="mockServing" @click="startServing" plain>{{mockServing ? "Serving ..." :"Start serving"}}</el-button>
+          <el-button type="danger" plain v-show="servingRouteId" @click="stopServing">Stop</el-button>
         </div>
       </el-card>
     </el-col>
@@ -32,6 +39,7 @@ import Headers from "./Response/Headers";
 import ResponseBody from "./Response/ResponseBody";
 import getNewHeader from "../helpers/getNewHeader";
 import toJS from "../helpers/toJS";
+import allowedMethods from "../helpers/requestAllowedMethods";
 
 export default {
   name: "Mockit",
@@ -44,9 +52,14 @@ export default {
     return {
       title: "Mockit",
       activeTab: "code",
+      mockServing: false,
+      message: "",
       servingRouteId: "",
+      requestMethods: allowedMethods,
       stub: {
+        host: "",
         path: "",
+        method: "GET",
         headers: [],
         statusCode: 200,
         body: {}
@@ -71,30 +84,53 @@ export default {
       this.stub.headers.splice(indexOfHeader, 1);
     },
     mapHeaders(headers) {
-      return headers.filter(h => h.key !== "" || h.value !== "").map(h =>
-        Object.defineProperty({}, h.key, {
+      return headers.filter(h => h.key !== "" || h.value !== "").map(h => {
+        const Header = Object.defineProperty({}, h.key, {
           value: h.value
-        })
-      );
+        });
+        return JSON.stringify(Header);
+      });
     },
-    handleStart() {
-      const { path, body, headers, statusCode } = this.stub;
+    startServing() {
+      const { host, method, path, body, headers, statusCode } = this.stub;
       const payload = {
-        path,
+        host,
+        method,
+        path: "/".concat(path),
         statusCode,
         headers: this.mapHeaders(headers),
         body: toJS(body)
       };
-      console.log("request", payload);
+
+      this.mockServing = true;
+
+      this.$http.post("/api/endpoint", payload).then(res => {
+        this.message = res.message;
+        this.servingRouteId = res.routeId;
+      });
+    },
+    stopServing() {
+      this.$http
+        .delete("/api/endpoint", { routeId: this.servingRouteId })
+        .then(res => {
+          this.message = res.message;
+          this.servingRouteId = "";
+          this.mockServing = false;
+        });
     }
   },
+
   created() {
+    this.$http.get("/api/host").then(res => {
+      this.stub.host = res.host;
+    });
     this.addNewHeader();
   }
 };
 </script>
 
 <style lang="scss">
+.group,
 .actions {
   display: flex;
   justify-content: space-between;

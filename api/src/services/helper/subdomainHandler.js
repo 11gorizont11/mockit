@@ -17,8 +17,9 @@ const handler = async ctx => {
   const { body, headers, statusCode } = dbRoute;
 
   headers.forEach(header => {
-    Object.keys(header).forEach(key => {
-      ctx.set(key, header[key]);
+    const newHeader = JSON.parse(header)
+    Object.keys(newHeader).forEach(key => {
+      ctx.set(key, newHeader[key]);
     });
   });
 

@@ -2,9 +2,12 @@ import axios from 'axios';
 // TODO: make HttpClient
 export default class ApiService {
   constructor(options = {}) {
+    // TODO: try to rethink that
+    const userCreds = this.getUserCreds();
+
     this.client = options.client || axios.create();
-    this.token = options.token;
-    this.refreshToken = options.refreshToken;
+    this.token = options.token || userCreds.token;
+    this.refreshToken = options.refreshToken || userCreds.refreshToken;
     this.refreshRequest = null;
 
     this.client.interceptors.request.use(
@@ -14,10 +17,10 @@ export default class ApiService {
         }
         const newConfig = {
           headers: {
-            Authorization: `Bearer ${this.token}`
           },
           ...config
         };
+        newConfig.headers.Authorization = `Bearer ${this.token}`
         return newConfig;
       },
       error => Promise.reject(error)
@@ -31,7 +34,7 @@ export default class ApiService {
           error.response.status !== 401 ||
           error.config.retry
         ) {
-          Promise.reject(error);
+          return Promise.reject(error);
         }
 
         if (!this.refreshRequest) {
@@ -53,24 +56,21 @@ export default class ApiService {
     );
   }
 
-  login = async ({ login, password }) => {
-    this.client.post("/api/auth/login", { login, password }).then(({ data }) => data)
+  login = async ({ login, password }) => this.client.post("/api/auth/login", { login, password }).then(({ data }) => this.setUserCreds(data))
+
+  signUp = async ({ login, email, password }) => this.client.post('/api/auth/sign-up', { login, email, password }).then(({ data }) => this.setUserCreds(data))
+
+  get = async url => this.client.get(url).then(({ data }) => data);
+
+
+  post = async (url, payload) => this.client.post(url, payload).then(({ data }) => data);
+
+
+  delete = async (url, payload) => this.client.delete(url, { data: payload }).then(({ data }) => data);
+
+  setUserCreds = (creds) => {
+    localStorage.setItem('mockitUserCreds', JSON.stringify(creds))
   }
-
-  signUp = async ({ login, email, password }) => {
-    this.client.post('/api/auth/sign-up', { login, email, password }).then(({ data }) => data)
-  }
-
-  get = async url => {
-    this.client.get(url).then(({ data }) => data);
-  };
-
-  post = async (url, payload) => {
-    this.client.post(url, payload).then(({ data }) => data);
-  };
-
-  delete = async (url, payload) => {
-    this.client.delete(url, payload).then(({ data }) => data);
-  };
+  getUserCreds = () => JSON.parse(localStorage.getItem('mockitUserCreds'))
 }
 

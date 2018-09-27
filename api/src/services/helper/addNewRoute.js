@@ -3,7 +3,7 @@ import handler from './subdomainHandler';
 
 const router = new Router();
 
-export const addNewRoute = ({ method, statusCode, body, path, headers }) => {
+export const addNewRoute = ({ method, path }) => {
   let newRoute;
   switch (method) {
     case 'GET':
