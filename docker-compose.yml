@@ -1,10 +1,19 @@
 version: '3.7'
 
 services:
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    depends_on:
+      - db
+      - api
   api:
     build:
       context: ./api
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     volumes:
       - './api/src:/app/src'
     ports:

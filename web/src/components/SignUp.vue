@@ -59,11 +59,22 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          console.log("submit!!!", {
-            login: this.signUpForm.login,
-            email: this.signUpForm.email,
-            password: this.signUpForm.password
-          });
+          const { login, email, password } = this.signUpForm;
+          this.$http
+            .signUp({
+              login,
+              email,
+              password
+            })
+            .then(() => {
+              this.$router.push("mockit");
+            })
+            .catch(err => {
+              this.$message({
+                message: err.message,
+                type: "error"
+              });
+            });
         } else {
           console.error("erroor!!!");
         }

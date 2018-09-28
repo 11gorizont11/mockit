@@ -2,13 +2,17 @@ import axios from 'axios';
 // TODO: make HttpClient
 export default class ApiService {
   constructor(options = {}) {
-    // TODO: try to rethink that
+    this.client = options.client || axios.create();
+    this.token = options.token;
+    this.refreshToken = options.refreshToken;
+    this.refreshRequest = null;
+
     const userCreds = this.getUserCreds();
 
-    this.client = options.client || axios.create();
-    this.token = options.token || userCreds.token;
-    this.refreshToken = options.refreshToken || userCreds.refreshToken;
-    this.refreshRequest = null;
+    if (userCreds && userCreds.token && userCreds.refreshToken) {
+      this.token = userCreds.token;
+      this.refreshToken = userCreds.refreshToken;
+    }
 
     this.client.interceptors.request.use(
       config => {
@@ -70,6 +74,8 @@ export default class ApiService {
 
   setUserCreds = (creds) => {
     localStorage.setItem('mockitUserCreds', JSON.stringify(creds))
+    this.token = creds.token;
+    this.refreshToken = creds.refreshToken;
   }
   getUserCreds = () => JSON.parse(localStorage.getItem('mockitUserCreds'))
 }
