@@ -10,6 +10,8 @@ services:
     depends_on:
       - db
       - api
+    links:
+      - api
   api:
     build:
       context: ./api

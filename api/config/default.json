@@ -5,12 +5,12 @@
   "SECRET_JWT": "very_secret_key",
   "SALT_ROUND": 10,
   "development": {
-    "MONGO_URL": "mongodb://localhost:27017/mockit-api-dev"
+    "MONGO_URL": "mongodb://db:27017/mockit-api-dev"
   },
   "test": {
-    "MONGO_URL": "mongodb://localhost:27017/mockit-api-test"
+    "MONGO_URL": "mongodb://db:27017/mockit-api-test"
   },
   "production": {
-    "MONGO_URL": "mongodb://localhost:27017/mockit-api-prod"
+    "MONGO_URL": "mongodb://db:27017/mockit-api-prod"
   }
 }
