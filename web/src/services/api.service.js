@@ -1,7 +1,10 @@
 import axios from 'axios';
 // TODO: make HttpClient
+
+const env = process.env.NODE_ENV;
 export default class ApiService {
   constructor(options = {}) {
+    this.apiUrl = env === 'development' ? '/api' : 'http://api:4000';
     this.client = options.client || axios.create();
     this.token = options.token;
     this.refreshToken = options.refreshToken;
@@ -42,7 +45,7 @@ export default class ApiService {
         }
 
         if (!this.refreshRequest) {
-          this.refreshRequest = this.client.post('api/auth/refresh', {
+          this.refreshRequest = this.client.post('/auth/refresh', {
             refreshToken: this.refreshToken
           });
         }
@@ -60,19 +63,20 @@ export default class ApiService {
     );
   }
 
-  login = async ({ login, password }) => this.client.post("/api/auth/login", { login, password }).then(({ data }) => this.setUserCreds(data))
+  login = async ({ login, password }) => this.post("/auth/login", { login, password }).then(data => { this.setUserCreds(data) })
 
-  signUp = async ({ login, email, password }) => this.client.post('/api/auth/sign-up', { login, email, password }).then(({ data }) => this.setUserCreds(data))
+  signUp = async ({ login, email, password }) => this.post('/auth/sign-up', { login, email, password }).then((data) => this.setUserCreds(data))
 
-  get = async url => this.client.get(url).then(({ data }) => data);
-
-
-  post = async (url, payload) => this.client.post(url, payload).then(({ data }) => data);
+  get = async url => this.client.get(this.apiUrl + url).then(({ data }) => data);
 
 
-  delete = async (url, payload) => this.client.delete(url, { data: payload }).then(({ data }) => data);
+  post = async (url, payload) => this.client.post(this.apiUrl + url, payload).then(({ data }) => data);
+
+
+  delete = async (url, payload) => this.client.delete(this.apiUrl + url, { data: payload }).then(({ data }) => data);
 
   setUserCreds = (creds) => {
+
     localStorage.setItem('mockitUserCreds', JSON.stringify(creds))
     this.token = creds.token;
     this.refreshToken = creds.refreshToken;

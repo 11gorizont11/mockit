@@ -70,10 +70,13 @@ export default {
               this.$router.push("mockit");
             })
             .catch(err => {
-              this.$message({
-                message: err.message,
-                type: "error"
-              });
+              if (err.response.data) {
+                this.$message({
+                  message: err.response.data.message,
+                  type: "error"
+                });
+                console.error("erroor!!!", err);
+              }
             });
         } else {
           console.error("erroor!!!");

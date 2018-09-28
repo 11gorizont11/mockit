@@ -101,7 +101,7 @@ export default {
       };
 
       this.$http
-        .post("/api/endpoint", payload)
+        .post("/endpoint", payload)
         .then(res => {
           if (res) {
             this.$message({
@@ -123,7 +123,7 @@ export default {
     },
     stopServing() {
       this.$http
-        .delete("/api/endpoint", { routeId: this.servingRouteId })
+        .delete("/endpoint", { routeId: this.servingRouteId })
         .then(res => {
           this.$message({
             message: res.message,
@@ -142,7 +142,7 @@ export default {
   },
 
   created() {
-    this.$http.get("/api/host").then(res => {
+    this.$http.get("/host").then(res => {
       this.stub.host = res.host;
     });
     this.addNewHeader();
