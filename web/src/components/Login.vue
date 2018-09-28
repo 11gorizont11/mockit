@@ -50,8 +50,18 @@ export default {
             })
             .then(() => {
               this.$router.push("mockit");
+            })
+            .catch(err => {
+              this.$message({
+                message: err.message,
+                type: "error"
+              });
             });
         } else {
+          this.$message({
+            message: "Invalid credentials",
+            type: "error"
+          });
           console.error("erroor!!!");
         }
       });

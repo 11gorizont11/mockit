@@ -21,9 +21,11 @@ const mockedRes = {
   statusCode: 200,
   method: 'GET',
   path: '/olol',
-  headers: [
-    "{ 'Access-Control-Allow-Origin': '*' }",
-    "{ 'Cache-Control': 'no-cache' }"
+  headers: [{
+    key: 'Access-Control-Allow-Origin',
+    value: '*'
+  },
+  { key: 'Cache-Control', value: 'no-cache' }
   ],
   body: {
     key: '1',

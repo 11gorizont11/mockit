@@ -1,7 +1,7 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue';
-import { Button, Input, Card, Loading, Form, FormItem, Row, Col, Container, Tabs, TabPane, Select, Option, Table, TableColumn } from 'element-ui';
+import { Button, Input, Card, Loading, Form, FormItem, Row, Col, Container, Tabs, TabPane, Select, Option, Table, TableColumn, Message } from 'element-ui';
 import ApiService from './services/api.service';
 import App from './App';
 import router from './router';
@@ -25,6 +25,7 @@ Vue.use(Loading.directive);
 Vue.config.productionTip = false;
 
 Vue.prototype.$http = new ApiService();
+Vue.prototype.$message = Message;
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

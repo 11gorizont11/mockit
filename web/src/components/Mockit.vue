@@ -67,12 +67,6 @@ export default {
     };
   },
   methods: {
-    setStatusCode(code) {
-      this.stub.statusCode = code;
-    },
-    updatePath(newPath) {
-      this.stab.path = newPath;
-    },
     updateHeader({ id, name, value }) {
       this.stub.headers.find(item => item.id === id)[name] = value;
     },
@@ -84,13 +78,17 @@ export default {
       this.stub.headers.splice(indexOfHeader, 1);
     },
     mapHeaders(headers) {
-      return headers.filter(h => h.key !== "" || h.value !== "").map(h => {
-        const Header = Object.defineProperty({}, h.key, {
-          value: h.value
-        });
-        return JSON.stringify(Header);
-      });
+      return headers.reduce((mappedHeaders, item) => {
+        if (item.key !== "" || item.value !== "") {
+          mappedHeaders.push({
+            key: item.key,
+            value: item.value
+          });
+        }
+        return mappedHeaders;
+      }, []);
     },
+
     startServing() {
       const { host, method, path, body, headers, statusCode } = this.stub;
       const payload = {
@@ -102,20 +100,43 @@ export default {
         body: toJS(body)
       };
 
-      this.mockServing = true;
-
-      this.$http.post("/api/endpoint", payload).then(res => {
-        this.message = res.message;
-        this.servingRouteId = res.routeId;
-      });
+      this.$http
+        .post("/api/endpoint", payload)
+        .then(res => {
+          if (res) {
+            this.$message({
+              message: res.message,
+              type: "success"
+            });
+            this.servingRouteId = res.routeId;
+            this.mockServing = true;
+          } else {
+            throw new Error("Oops, something went wrong!");
+          }
+        })
+        .catch(err => {
+          this.$message({
+            message: err.message,
+            type: "error"
+          });
+        });
     },
     stopServing() {
       this.$http
         .delete("/api/endpoint", { routeId: this.servingRouteId })
         .then(res => {
-          this.message = res.message;
+          this.$message({
+            message: res.message,
+            type: "success"
+          });
           this.servingRouteId = "";
           this.mockServing = false;
+        })
+        .catch(err => {
+          this.$message({
+            message: err.message,
+            type: "error"
+          });
         });
     }
   },

@@ -9,7 +9,7 @@ const routeSchema = new mongoose.Schema(
     statusCode: Number,
     method: String,
     path: String,
-    headers: [String],
+    headers: [Schema.Types.Mixed],
     userId: String,
     body: String
   },
