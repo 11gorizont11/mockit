@@ -9,5 +9,5 @@ export default {
   statusCode: 200,
   body: {},
   servingRouteId: '',
-  mockServing: false
+  serving: false
 }

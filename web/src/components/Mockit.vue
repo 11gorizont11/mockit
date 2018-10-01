@@ -96,7 +96,7 @@ export default {
         body: toJS(body)
       };
 
-      this.$http
+      return this.$http
         .post('/endpoint', payload)
         .then(res => {
           if (res) {
@@ -105,21 +105,22 @@ export default {
               type: 'success'
             });
             this.stub.servingRouteId = res.routeId;
-            this.stub.mockServing = true;
+            this.stub.serving = true;
+            return stub;
           } else {
             throw new Error('Oops, something went wrong!');
           }
         })
         .catch(err => {
           this.$message({
-            message: err.message,
+            message: err.response.data.message,
             type: 'error'
           });
         });
     },
 
     stopServing(id) {
-      this.$http
+      return this.$http
         .delete('/endpoint', { routeId: id })
         .then(res => {
           this.$message({
@@ -138,8 +139,11 @@ export default {
     },
 
     addStub() {
-      this.stubs.push(this.stub);
-      this.startServing(this.stub);
+      this.startServing(this.stub).then((res, err) => {
+        if (res) {
+          this.stubs.push({ ...this.stub });
+        }
+      });
     },
     resetStub() {
       this.stub.path = '';
