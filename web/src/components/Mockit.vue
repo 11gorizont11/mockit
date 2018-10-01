@@ -9,7 +9,7 @@
             </el-option>
           </el-select>
           <el-input placeholder="Please input mock url" v-model="stub.path">
-            <template slot="prepend">http://{{stub.host}}.localhost:4000/</template>
+            <template slot="prepend">http://{{stub.host}}.{{stub.domain}}</template>
           </el-input>
         </div>
 
@@ -25,45 +25,41 @@
           </el-tab-pane>
         </el-tabs>
         <div class="actions">
-          <el-button type="success" :loading="mockServing" @click="startServing" plain>{{mockServing ? "Serving ..." :"Start serving"}}</el-button>
-          <el-button type="danger" plain v-show="servingRouteId" @click="stopServing">Stop</el-button>
+          <el-button type="success" @click="addStub" plain>Add Stub</el-button>
+          <el-button type="danger" @click="resetStub" plain>Reset</el-button>
         </div>
       </el-card>
+      <stubs-list :stubs="stubs" v-if="stubs.length"/>
     </el-col>
   </el-row>
 </template>
 
 <script>
-import StatusCode from "./Response/StatusCode";
-import Headers from "./Response/Headers";
-import ResponseBody from "./Response/ResponseBody";
-import getNewHeader from "../helpers/getNewHeader";
-import toJS from "../helpers/toJS";
-import allowedMethods from "../helpers/requestAllowedMethods";
+import StatusCode from './Response/StatusCode';
+import Headers from './Response/Headers';
+import ResponseBody from './Response/ResponseBody';
+import StubsList from './StubsList';
+import getNewHeader from '../helpers/getNewHeader';
+import toJS from '../helpers/toJS';
+import allowedMethods from '../helpers/requestAllowedMethods';
+import initialMock from '../helpers/initialMock';
 
 export default {
-  name: "Mockit",
+  name: 'Mockit',
   components: {
     StatusCode,
     Headers,
-    ResponseBody
+    ResponseBody,
+    StubsList
   },
   data() {
     return {
-      title: "Mockit",
-      activeTab: "code",
-      mockServing: false,
-      message: "",
-      servingRouteId: "",
+      title: 'Mockit',
+      activeTab: 'code',
+      message: '',
       requestMethods: allowedMethods,
-      stub: {
-        host: "",
-        path: "",
-        method: "GET",
-        headers: [],
-        statusCode: 200,
-        body: {}
-      }
+      stub: { ...initialMock },
+      stubs: []
     };
   },
   methods: {
@@ -79,7 +75,7 @@ export default {
     },
     mapHeaders(headers) {
       return headers.reduce((mappedHeaders, item) => {
-        if (item.key !== "" || item.value !== "") {
+        if (item.key !== '' || item.value !== '') {
           mappedHeaders.push({
             key: item.key,
             value: item.value
@@ -89,60 +85,70 @@ export default {
       }, []);
     },
 
-    startServing() {
-      const { host, method, path, body, headers, statusCode } = this.stub;
+    startServing(stub) {
+      const { host, method, path, body, headers, statusCode } = stub;
       const payload = {
         host,
         method,
-        path: "/".concat(path),
+        path: '/'.concat(path),
         statusCode,
         headers: this.mapHeaders(headers),
         body: toJS(body)
       };
 
       this.$http
-        .post("/endpoint", payload)
+        .post('/endpoint', payload)
         .then(res => {
           if (res) {
             this.$message({
               message: res.message,
-              type: "success"
+              type: 'success'
             });
-            this.servingRouteId = res.routeId;
-            this.mockServing = true;
+            this.stub.servingRouteId = res.routeId;
+            this.stub.mockServing = true;
           } else {
-            throw new Error("Oops, something went wrong!");
+            throw new Error('Oops, something went wrong!');
           }
         })
         .catch(err => {
           this.$message({
             message: err.message,
-            type: "error"
+            type: 'error'
           });
         });
     },
-    stopServing() {
+
+    stopServing(id) {
       this.$http
-        .delete("/endpoint", { routeId: this.servingRouteId })
+        .delete('/endpoint', { routeId: id })
         .then(res => {
           this.$message({
             message: res.message,
-            type: "success"
+            type: 'success'
           });
-          this.servingRouteId = "";
+          this.servingRouteId = '';
           this.mockServing = false;
         })
         .catch(err => {
           this.$message({
             message: err.message,
-            type: "error"
+            type: 'error'
           });
         });
+    },
+
+    addStub() {
+      this.stubs.push(this.stub);
+      this.startServing(this.stub);
+    },
+    resetStub() {
+      this.stub.path = '';
+      this.stub.method = 'GET';
     }
   },
 
   created() {
-    this.$http.get("/host").then(res => {
+    this.$http.get('/host').then(res => {
       this.stub.host = res.host;
     });
     this.addNewHeader();

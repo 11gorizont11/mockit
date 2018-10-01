@@ -4,7 +4,7 @@ import axios from 'axios';
 const env = process.env.NODE_ENV;
 export default class ApiService {
   constructor(options = {}) {
-    this.apiUrl = env === 'development' ? '/api' : 'http://api:4000';
+    this.apiUrl = env === 'development' ? '/api' : process.env.API_HOST;
     this.client = options.client || axios.create();
     this.token = options.token;
     this.refreshToken = options.refreshToken;

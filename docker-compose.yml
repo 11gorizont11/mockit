@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - '8080:8080'
+    environment: 
+      API_HOST: api
     depends_on:
       - api
       - db
@@ -15,9 +17,7 @@ services:
   api:
     build:
       context: ./api
-      dockerfile: Dockerfile
-    volumes:
-      - './api/src:/app/src'
+      dockerfile: Dockerfile.dev
     ports:
       - '4000:4000'
     depends_on:
