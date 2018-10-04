@@ -53,7 +53,7 @@ export default {
             })
             .catch(err => {
               this.$message({
-                message: err.response.data.message,
+                message: err.response.data.message || err.message,
                 type: "error"
               });
             });
