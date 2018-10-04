@@ -1,6 +1,6 @@
 <template>
   <el-row :gutter="12">
-    <el-col :xs="24" :sm="{span: 22, offset: 1}" :md="{span: 18, offset: 3}" :lg="{span: 14, offset:5}">
+    <el-col :xs="24" :sm="{span: 22, offset: 1}" :md="{span: 20, offset: 2}" :lg="{span: 16, offset:4}">
       <h2 class="text-center" v-html="title"> </h2>
       <el-card shadow="always" class="text-center">
         <div class="group">
@@ -29,23 +29,23 @@
           <el-button type="danger" @click="resetStub" plain>Reset</el-button>
         </div>
       </el-card>
-      <stubs-list :stubs="stubs" v-if="stubs.length"/>
+      <stubs-list @start:stub="startStub" @stop:stub="stopServing" @delete:stub="deleteStub" :stubs="stubs" v-if="stubs.length" />
     </el-col>
   </el-row>
 </template>
 
 <script>
-import StatusCode from './Response/StatusCode';
-import Headers from './Response/Headers';
-import ResponseBody from './Response/ResponseBody';
-import StubsList from './StubsList';
-import getNewHeader from '../helpers/getNewHeader';
-import toJS from '../helpers/toJS';
-import allowedMethods from '../helpers/requestAllowedMethods';
-import initialMock from '../helpers/initialMock';
+import StatusCode from "./Response/StatusCode";
+import Headers from "./Response/Headers";
+import ResponseBody from "./Response/ResponseBody";
+import StubsList from "./StubsList";
+import getNewHeader from "../helpers/getNewHeader";
+import toJS from "../helpers/toJS";
+import allowedMethods from "../helpers/requestAllowedMethods";
+import initialMock from "../helpers/initialMock";
 
 export default {
-  name: 'Mockit',
+  name: "Mockit",
   components: {
     StatusCode,
     Headers,
@@ -54,9 +54,9 @@ export default {
   },
   data() {
     return {
-      title: 'Mockit',
-      activeTab: 'code',
-      message: '',
+      title: "Mockit",
+      activeTab: "code",
+      message: "",
       requestMethods: allowedMethods,
       stub: { ...initialMock },
       stubs: []
@@ -75,7 +75,7 @@ export default {
     },
     mapHeaders(headers) {
       return headers.reduce((mappedHeaders, item) => {
-        if (item.key !== '' || item.value !== '') {
+        if (item.key !== "" || item.value !== "") {
           mappedHeaders.push({
             key: item.key,
             value: item.value
@@ -85,74 +85,95 @@ export default {
       }, []);
     },
 
+    startStub(stub) {
+      const ss = this.stubs.find(item => item === stub);
+      this.startServing(stub).then(servedStub => {
+        if (servedStub) {
+          ss.servingRouteId = servedStub.servingRouteId;
+          ss.serving = servedStub.serving;
+        }
+      });
+    },
+
     startServing(stub) {
       const { host, method, path, body, headers, statusCode } = stub;
       const payload = {
         host,
         method,
-        path: '/'.concat(path),
+        path: "/".concat(path),
         statusCode,
         headers: this.mapHeaders(headers),
         body: toJS(body)
       };
 
+      const servedStub = { ...stub };
+
       return this.$http
-        .post('/endpoint', payload)
+        .post("/endpoint", payload)
         .then(res => {
           if (res) {
             this.$message({
               message: res.message,
-              type: 'success'
+              type: "success"
             });
-            this.stub.servingRouteId = res.routeId;
-            this.stub.serving = true;
-            return stub;
+            servedStub.servingRouteId = res.routeId;
+            servedStub.serving = true;
           } else {
-            throw new Error('Oops, something went wrong!');
+            throw new Error("Oops, something went wrong!");
           }
+          return servedStub;
         })
         .catch(err => {
           this.$message({
             message: err.response.data.message,
-            type: 'error'
+            type: "error"
           });
         });
     },
 
-    stopServing(id) {
+    stopServing(stub) {
       return this.$http
-        .delete('/endpoint', { routeId: id })
+        .delete("/endpoint", { routeId: stub.servingRouteId })
         .then(res => {
           this.$message({
             message: res.message,
-            type: 'success'
+            type: "success"
           });
-          this.servingRouteId = '';
-          this.mockServing = false;
+          const stoppedStub = this.stubs.find(item => item === stub);
+          stoppedStub.servingRouteId = "";
+          stoppedStub.serving = false;
         })
         .catch(err => {
           this.$message({
             message: err.message,
-            type: 'error'
+            type: "error"
           });
         });
     },
 
+    deleteStub(stub) {
+      if (stub.serving) {
+        this.stopServing(stub.servingRouteId);
+      }
+      const removedStubIndex = this.stubs.findIndex(item => item === stub);
+      this.stubs.splice(removedStubIndex, 1);
+    },
+
     addStub() {
-      this.startServing(this.stub).then((res, err) => {
-        if (res) {
-          this.stubs.push({ ...this.stub });
+      this.startServing(this.stub).then(stub => {
+        if (stub) {
+          this.stubs.push(stub);
         }
       });
     },
     resetStub() {
-      this.stub.path = '';
-      this.stub.method = 'GET';
+      this.stub.path = "";
+      this.stub.method = "GET";
     }
   },
 
   created() {
-    this.$http.get('/host').then(res => {
+    this.$http.get("/host").then(res => {
       this.stub.host = res.host;
     });
     this.addNewHeader();
