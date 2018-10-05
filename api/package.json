@@ -6,7 +6,7 @@
   "author": "Alex Olexiuk",
   "license": "MIT",
   "scripts": {
-    "start": "rimraf ./dist && babel -d ./dist ./src -s && node dist/main.js",
+    "start": "rimraf ./dist && babel -d ./dist ./src -s && NODE_ENV=production node dist/main.js",
     "dev": "NODE_ENV=development node index.js",
     "lint:js": "eslint ./src",
     "test": "env NODE_ENV=test mocha --require babel-register --reporter spec",

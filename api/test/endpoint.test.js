@@ -21,10 +21,11 @@ const mockedRes = {
   statusCode: 200,
   method: 'GET',
   path: '/olol',
-  headers: [
-    { 'Content-Type': 'application/json' },
-    { 'Access-Control-Allow-Origin': '*' },
-    { 'Cache-Control': 'no-cache' }
+  headers: [{
+    key: 'Access-Control-Allow-Origin',
+    value: '*'
+  },
+  { key: 'Cache-Control', value: 'no-cache' }
   ],
   body: {
     key: '1',
@@ -115,6 +116,8 @@ describe('Endpoint Spec', () => {
         `${testRes.host}.${config.get('APP_HOST')}:${config.get('HTTP_PORT')}`
       )
       .then(res => {
+        expect(res).to.have.header("Access-Control-Allow-Origin", "*");
+        expect(res).to.have.header('Cache-Control', 'no-cache');
         expect(res).to.have.status(mockedRes.statusCode);
         expect(res.body).eqls(mockedRes.body);
         done();
@@ -139,7 +142,7 @@ describe('Endpoint Spec', () => {
         expect(res).to.have.status(405);
         expect(res.body.message).eqls(
           `Route with Path ${mockedRes.path} and Method ${
-            mockedRes.method
+          mockedRes.method
           } has existed already.`
         );
         done();
@@ -154,18 +157,13 @@ describe('Endpoint Spec', () => {
       .post(TESTED_URL)
       .set('Authorization', `Bearer ${token}`)
       .send(testRes)
-      .then(res => {
-        return chai
-          .request(server)
-          .delete(TESTED_URL)
-          .set('Authorization', `Bearer ${token}`)
-          .send({
-            host: testRes.host,
-            path: testRes.path,
-            method: testRes.method,
-            routeId: res.body.routeId
-          });
-      })
+      .then(res => chai
+        .request(server)
+        .delete(TESTED_URL)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          routeId: res.body.routeId
+        }))
       .then(res => {
         expect(res).to.have.status(200);
         expect(res.body.message).equal('Service has been successfully stopped');
@@ -180,16 +178,11 @@ describe('Endpoint Spec', () => {
       .delete(TESTED_URL)
       .set('Authorization', `Bearer ${token}`)
       .send({
-        path: '/some',
-        method: 'DELETE',
-        host: testRes.host,
         routeId: 'ololo'
       })
       .then(res => {
         expect(res).to.have.status(404);
-        expect(res.body.message).equal(
-          `Route with Path /some and Method DELETE not found.`
-        );
+        expect(res.body.message).to.be.a('string').that.not.empty;
         done();
       })
       .catch(err => console.error(err));

@@ -1,30 +1,28 @@
-import { isHasInRouter, removeRoute } from './helper';
+import { removeRoute } from './helper';
 import RouteModel from '../models/Route';
 
-const deleteRouteHandler = async (ctx, router, subdomain) => {
-  const { path, method, host, routeId } = ctx.request.body;
-
-  if (!path || !method || !host || !routeId) {
-    return ctx.badRequest('path, method, host, routeId fields are required.');
-  }
-
+const deleteRouteHandler = async (ctx, subdomain) => {
+  const { routeId } = ctx.request.body;
   const { id: userId } = ctx.state.user;
 
-  if (isHasInRouter({ subdomain, host, method, path })) {
-    removeRoute({ subdomain, host, method, path });
-    try {
-      await RouteModel.deleteOne({
-        _id: routeId,
-        userId
-      });
+  if (!routeId) {
+    return ctx.badRequest('routeId is required.');
+  }
 
-      return ctx.ok('Service has been successfully stopped');
-    } catch (err) {
-      ctx.internalServerError('Oops! Something went wrong...');
-    }
-  } else {
+  try {
+    const dbRoute = await RouteModel.findOneAndDelete({
+      _id: routeId,
+      userId
+    })
+
+    const { host, method, path } = dbRoute;
+    removeRoute({ subdomain, host, method, path });
+    return ctx.ok('Service has been successfully stopped');
+  }
+
+  catch (err) {
     return ctx.notFound(
-      `Route with Path ${path} and Method ${method} not found.`
+      `Route not found.`
     );
   }
 };

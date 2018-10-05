@@ -16,11 +16,11 @@ const handler = async ctx => {
 
   const { body, headers, statusCode } = dbRoute;
 
-  headers.forEach(header => {
-    Object.keys(header).forEach(key => {
-      ctx.set(key, header[key]);
+  if (headers.length) {
+    headers.forEach(header => {
+      ctx.set(header.key, header.value);
     });
-  });
+  }
 
   ctx.status = statusCode;
   ctx.body = JSON.parse(body);
