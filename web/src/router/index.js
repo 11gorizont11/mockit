@@ -18,6 +18,15 @@ function requireAuth(to, from, next) {
     next()
   }
 }
+function redirectToMocks(to, from, next) {
+  if (getUserCreds()) {
+    next({
+      path: '/mockit',
+    })
+  } else {
+    next()
+  }
+}
 
 export default new Router({
   routes: [
@@ -25,6 +34,7 @@ export default new Router({
       path: '/',
       name: 'HelloWorld',
       component: HelloWorld,
+      beforeEnter: redirectToMocks
     },
     {
       path: '/login',
