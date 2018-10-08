@@ -8,7 +8,7 @@
     </el-table-column>
     <el-table-column label="Url" width="380">
       <template slot-scope="scope">
-        <span style="margin-left: 10px">{{"http://"+ scope.row.host + "."+ scope.row.domain + scope.row.path}}</span>
+        <span style="margin-left: 10px">{{"http://"+ scope.row.host + "."+ scope.row.domain + "/" + scope.row.path}}</span>
       </template>
     </el-table-column>
     <el-table-column prop="method" label="Method" width="120">

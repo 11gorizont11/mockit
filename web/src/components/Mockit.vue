@@ -9,7 +9,7 @@
             </el-option>
           </el-select>
           <el-input placeholder="Please input mock url" v-model="stub.path">
-            <template slot="prepend">http://{{stub.host}}.{{stub.domain}}</template>
+            <template slot="prepend">http://{{stub.host}}.{{stub.domain}}/</template>
           </el-input>
         </div>
 
@@ -153,8 +153,15 @@ export default {
 
     deleteStub(stub) {
       if (stub.serving) {
-        this.stopServing(stub.servingRouteId);
+        this.stopServing(stub.servingRouteId).then(res =>
+          this.removeStub(stub)
+        );
+      } else {
+        this.removeStub(stub);
       }
+    },
+
+    removeStub(stub) {
       const removedStubIndex = this.stubs.findIndex(item => item === stub);
       this.stubs.splice(removedStubIndex, 1);
     },

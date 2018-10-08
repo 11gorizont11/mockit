@@ -5,6 +5,7 @@ import bodyParser from 'koa-bodyparser';
 import jwtMiddleware from 'koa-jwt';
 import respond from 'koa-respond';
 import Subdomain from 'koa-subdomain';
+import cors from '@koa/cors';
 import config from 'config';
 
 import host from './routes/host';
@@ -42,7 +43,7 @@ app
         ctx.throw(422, 'body parse error');
       }
     })
-  )
+  ).use(cors())
   .use(respond());
 
 router.get('/', ctx => {

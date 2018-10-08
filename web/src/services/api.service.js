@@ -2,9 +2,11 @@ import axios from 'axios';
 // TODO: make HttpClient
 
 const env = process.env.NODE_ENV;
+console.log("env", process.env);
+console.log("HOSt api", "http://docker.for.mac.localhost:4000")
 export default class ApiService {
   constructor(options = {}) {
-    this.apiUrl = env === 'development' ? '/api' : process.env.API_HOST;
+    this.apiUrl = env === 'development' ? '/api' : "http://docker.for.mac.localhost:4000";
     this.client = options.client || axios.create();
     this.token = options.token;
     this.refreshToken = options.refreshToken;
