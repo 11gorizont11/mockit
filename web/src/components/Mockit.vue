@@ -153,9 +153,11 @@ export default {
 
     deleteStub(stub) {
       if (stub.serving) {
-        this.stopServing(stub.servingRouteId).then(res =>
-          this.removeStub(stub)
-        );
+        this.stopServing(stub.servingRouteId).then(res => {
+          if (res) {
+            this.removeStub(stub);
+          }
+        });
       } else {
         this.removeStub(stub);
       }
