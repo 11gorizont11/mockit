@@ -65,9 +65,13 @@ export default class ApiService {
     );
   }
 
-  login = async ({ login, password }) => this.post("/auth/login", { login, password }).then(data => { this.setUserCreds(data) })
+  login = async ({ login, password }) => this.post("/auth/login", { login, password }).then(data => { this.setUserCreds({ ...data, login }) })
 
-  signUp = async ({ login, email, password }) => this.post('/auth/sign-up', { login, email, password }).then((data) => this.setUserCreds(data))
+  signUp = async ({ login, email, password }) => this.post('/auth/sign-up', { login, email, password }).then((data) => this.setUserCreds({ ...data, login }))
+
+  logout = async () => {
+    this.removeCreds();
+  }
 
   get = async url => this.client.get(this.apiUrl + url).then(({ data }) => data);
 
@@ -78,11 +82,16 @@ export default class ApiService {
   delete = async (url, payload) => this.client.delete(this.apiUrl + url, { data: payload }).then(({ data }) => data);
 
   setUserCreds = (creds) => {
-
     localStorage.setItem('mockitUserCreds', JSON.stringify(creds))
     this.token = creds.token;
     this.refreshToken = creds.refreshToken;
   }
   getUserCreds = () => JSON.parse(localStorage.getItem('mockitUserCreds'))
+
+  removeCreds = () => {
+    this.token = "";
+    this.refreshToken = "";
+    localStorage.removeItem('mockitUserCreds')
+  };
 }
 

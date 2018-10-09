@@ -1,18 +1,29 @@
 <template>
   <div id="app">
-    <router-view />
+    <component :is="layout">
+      <router-view />
+    </component>
   </div>
 </template>
 
 <script>
+const defautlLayout = "base";
+
 export default {
-  name: "App"
+  name: "App",
+  computed: {
+    layout() {
+      return `${this.$route.meta.layout || defautlLayout}-layout`;
+    }
+  }
 };
 </script>
 
 <style lang="scss">
 body {
   font-family: Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
 }
 #app {
   font-family: Helvetica, sans-serif;
@@ -21,7 +32,26 @@ body {
   color: #2c3e50;
   min-width: 320px;
 }
-
+.wrapper {
+  padding: 0 6px;
+}
+.app-header {
+  min-height: 45px;
+  background-color: rgba(226, 226, 226, 0.36);
+  border-bottom: 1px solid #cdcdcd;
+}
+.top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+.logo__img {
+  max-width: 35px;
+}
+.trigger {
+  cursor: pointer;
+}
 .text-center {
   text-align: center !important;
 }

@@ -49,7 +49,7 @@ export default {
               password: this.loginForm.password
             })
             .then(() => {
-              this.$router.push("mockit");
+              this.$router.push("stubit");
             })
             .catch(err => {
               this.$message({

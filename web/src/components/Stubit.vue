@@ -45,7 +45,7 @@ import allowedMethods from "../helpers/requestAllowedMethods";
 import initialMock from "../helpers/initialMock";
 
 export default {
-  name: "Mockit",
+  name: "Srubit",
   components: {
     StatusCode,
     Headers,
@@ -54,7 +54,7 @@ export default {
   },
   data() {
     return {
-      title: "Mockit",
+      title: "Stubit",
       activeTab: "code",
       message: "",
       requestMethods: allowedMethods,

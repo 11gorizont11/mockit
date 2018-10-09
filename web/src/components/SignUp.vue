@@ -67,7 +67,7 @@ export default {
               password
             })
             .then(() => {
-              this.$router.push("mockit");
+              this.$router.push("stubit");
             })
             .catch(err => {
               if (err.response.data) {

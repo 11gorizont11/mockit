@@ -40,9 +40,6 @@ export default {
     stubs: Array,
     required: true
   },
-  data() {
-    return {};
-  },
   methods: {
     handleStart(stub) {
       this.$emit("start:stub", stub);
