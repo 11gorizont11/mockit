@@ -3,7 +3,7 @@ import Router from 'vue-router';
 import HelloWorld from '@/components/HelloWorld';
 import Login from '@/components/Login';
 import SignUp from '@/components/SignUp';
-import Mockit from '@/components/Mockit';
+import Stubit from '@/components/Stubit';
 import getUserCreds from '../helpers/getUserCreds';
 
 Vue.use(Router);
@@ -21,7 +21,7 @@ function requireAuth(to, from, next) {
 function redirectToMocks(to, from, next) {
   if (getUserCreds()) {
     next({
-      path: '/mockit',
+      path: '/stubit',
     })
   } else {
     next()
@@ -47,9 +47,9 @@ export default new Router({
       component: SignUp,
     },
     {
-      path: '/mockit',
-      name: 'Mockit',
-      component: Mockit,
+      path: '/stubit',
+      name: 'Stubit',
+      component: Stubit,
       beforeEnter: requireAuth
     }
   ],
