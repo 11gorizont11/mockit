@@ -35,17 +35,17 @@
 </template>
 
 <script>
-import StatusCode from "./Response/StatusCode";
-import Headers from "./Response/Headers";
-import ResponseBody from "./Response/ResponseBody";
-import StubsList from "./StubsList";
-import getNewHeader from "../helpers/getNewHeader";
-import toJS from "../helpers/toJS";
-import allowedMethods from "../helpers/requestAllowedMethods";
-import initialMock from "../helpers/initialMock";
+import StatusCode from './Response/StatusCode';
+import Headers from './Response/Headers';
+import ResponseBody from './Response/ResponseBody';
+import StubsList from './StubsList';
+import getNewHeader from '../helpers/getNewHeader';
+import toJS from '../helpers/toJS';
+import allowedMethods from '../helpers/requestAllowedMethods';
+import initialMock from '../helpers/initialMock';
 
 export default {
-  name: "Srubit",
+  name: 'Stubit',
   components: {
     StatusCode,
     Headers,
@@ -54,9 +54,9 @@ export default {
   },
   data() {
     return {
-      title: "Stubit",
-      activeTab: "code",
-      message: "",
+      title: 'StubIt',
+      activeTab: 'code',
+      message: '',
       requestMethods: allowedMethods,
       stub: { ...initialMock },
       stubs: []
@@ -75,7 +75,7 @@ export default {
     },
     mapHeaders(headers) {
       return headers.reduce((mappedHeaders, item) => {
-        if (item.key !== "" || item.value !== "") {
+        if (item.key !== '' || item.value !== '') {
           mappedHeaders.push({
             key: item.key,
             value: item.value
@@ -90,7 +90,6 @@ export default {
       this.startServing(stub).then(servedStub => {
         if (servedStub) {
           ss.servingRouteId = servedStub.servingRouteId;
-          ss.serving = servedStub.serving;
         }
       });
     },
@@ -100,7 +99,7 @@ export default {
       const payload = {
         host,
         method,
-        path: "/".concat(path),
+        path: '/'.concat(path),
         statusCode,
         headers: this.mapHeaders(headers),
         body: toJS(body)
@@ -109,51 +108,50 @@ export default {
       const servedStub = { ...stub };
 
       return this.$http
-        .post("/endpoint", payload)
+        .post('/endpoint', payload)
         .then(res => {
           if (res) {
             this.$message({
               message: res.message,
-              type: "success"
+              type: 'success'
             });
             servedStub.servingRouteId = res.routeId;
-            servedStub.serving = true;
           } else {
-            throw new Error("Oops, something went wrong!");
+            throw new Error('Oops, something went wrong!');
           }
           return servedStub;
         })
         .catch(err => {
           this.$message({
             message: err.response.data.message,
-            type: "error"
+            type: 'error'
           });
         });
     },
 
     stopServing(stub) {
       return this.$http
-        .delete("/endpoint", { routeId: stub.servingRouteId })
+        .delete('/endpoint', { routeId: stub.servingRouteId })
         .then(res => {
           this.$message({
             message: res.message,
-            type: "success"
+            type: 'success'
           });
           const stoppedStub = this.stubs.find(item => item === stub);
-          stoppedStub.servingRouteId = "";
-          stoppedStub.serving = false;
+          stoppedStub.servingRouteId = '';
+          return stoppedStub;
         })
         .catch(err => {
           this.$message({
             message: err.message,
-            type: "error"
+            type: 'error'
           });
         });
     },
 
     deleteStub(stub) {
-      if (stub.serving) {
-        this.stopServing(stub.servingRouteId).then(res => {
+      if (stub.servingRouteId) {
+        this.stopServing(stub).then(res => {
           if (res) {
             this.removeStub(stub);
           }
@@ -176,15 +174,21 @@ export default {
       });
     },
     resetStub() {
-      this.stub.path = "";
-      this.stub.method = "GET";
+      this.stub.path = '';
+      this.stub.method = 'GET';
     }
   },
 
   created() {
-    this.$http.get("/host").then(res => {
+    this.$http.get('/host').then(res => {
       this.stub.host = res.host;
     });
+    this.$http.get('/user/routes').then(res => {
+      this.stubs = res.stubs.map(item => {
+        const {_id: servingRouteId} = item;
+        return {...item, servingRouteId};
+        });
+    })
     this.addNewHeader();
   }
 };

@@ -15,13 +15,13 @@
     </el-table-column>
     <el-table-column label="Status" width="80" align="center">
       <template slot-scope="scope">
-        <i v-if="scope.row.serving" class="el-icon-loading"></i>
+        <i v-if="scope.row.servingRouteId" class="el-icon-loading"></i>
         <i v-else class="el-icon-setting"></i>
       </template>
     </el-table-column>
     <el-table-column label="Actions" align="right">
       <template slot-scope="scope">
-        <el-button v-if="scope.row.serving" size="mini" @click="handleStop(scope.row)">Stop</el-button>
+        <el-button v-if="scope.row.servingRouteId" size="mini" @click="handleStop(scope.row)">Stop</el-button>
         <el-button v-else size="mini" type="success" @click="handleStart(scope.row)">Start</el-button>
         <el-button size="mini" type="danger" @click="handleDelete(scope.row)">Delete</el-button>
       </template>

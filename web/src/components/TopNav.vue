@@ -14,29 +14,41 @@
 </template>
 
 <script>
-import getUserCreds from "../helpers/getUserCreds";
-// TODO: refactor this shit
+import getUserCreds from '../helpers/getUserCreds';
+
 export default {
-  name: "TopApp",
+  name: 'TopApp',
   data() {
     return {
-      loginName: ""
+      loginName: ''
     };
   },
 
   methods: {
     logoutMe() {
-      this.$http.logout().then(() => this.$router.push("login"));
-      this.loginName = "";
+      this.$http.logout().then(res => {
+        if (res) {
+          this.$message({
+            message: res.message,
+            type: 'success'
+          });
+          this.$router.push('login');
+          this.loginName = '';
+        }
+      });
+    },
+    getLoginName() {
+      const creads = JSON.parse(getUserCreds());
+      this.loginName = creads === null ? '' : creads.login;
     }
   },
   watch: {
     $route() {
-      this.loginName = JSON.parse(getUserCreds()).login;
+      this.getLoginName();
     }
   },
   mounted() {
-    this.loginName = JSON.parse(getUserCreds()).login;
+    this.getLoginName();
   }
 };
 </script>

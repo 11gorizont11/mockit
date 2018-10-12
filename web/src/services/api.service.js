@@ -69,9 +69,10 @@ export default class ApiService {
 
   signUp = async ({ login, email, password }) => this.post('/auth/sign-up', { login, email, password }).then((data) => this.setUserCreds({ ...data, login }))
 
-  logout = async () => {
+  logout = async () => this.post('/auth/logout', {}).then((data) => {
     this.removeCreds();
-  }
+    return data;
+  })
 
   get = async url => this.client.get(this.apiUrl + url).then(({ data }) => data);
 

@@ -10,6 +10,7 @@ import config from 'config';
 
 import host from './routes/host';
 import auth from './routes/auth';
+import user from './routes/user';
 
 import newRouteHandler from './services/newRoute.service';
 import deleteRouteHandler from './services/deleteRoute.service';
@@ -50,6 +51,7 @@ router.get('/', ctx => {
   ctx.body = 'Hello from mockit API!!!';
 });
 
+
 router.use('/auth', auth.routes());
 
 router.use(
@@ -59,6 +61,7 @@ router.use(
 );
 
 router.use(host.routes());
+router.use('/user', user.routes());
 
 router
   .post('/endpoint', async (ctx, next) => {
