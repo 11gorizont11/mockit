@@ -4,15 +4,15 @@
       <h2 class="text-center" v-html="title"> </h2>
       <el-card shadow="always" class="text-center">
         <el-form :model="loginForm" status-icon :rules="rules" ref="loginForm">
-          <el-form-item label="Login name" prop="login">
-            <el-input v-model="loginForm.login"></el-input>
+          <el-form-item label="Email" prop="email">
+            <el-input type="email" v-model="loginForm.email"></el-input>
           </el-form-item>
           <el-form-item label="Password" prop="password">
             <el-input type="password" v-model="loginForm.password" autocomplete="off"></el-input>
           </el-form-item>
         </el-form>
         <router-link class="link-to" to="/sign-up">I wanna new account</router-link>
-        <el-button type="primary" @click="submitForm('loginForm')">Login me!</el-button>
+        <el-button native-type="submit" type="primary" @click="submitForm('loginForm')">Login me!</el-button>
       </el-card>
     </el-col>
   </el-row>
@@ -30,9 +30,12 @@ export default {
         password: ""
       },
       rules: {
-        login: [
-          { required: true, message: "Please enter login name", trigger: blur }
-        ],
+        email: [
+          {
+            required: true,
+            message: "Please input email address",
+            trigger: "blur"
+          }],
         password: [
           { required: true, message: "Passsword is required", trigger: blur }
         ]
@@ -45,7 +48,7 @@ export default {
         if (valid) {
           this.$http
             .login({
-              login: this.loginForm.login,
+              email: this.loginForm.email,
               password: this.loginForm.password
             })
             .then(() => {

@@ -1,7 +1,5 @@
 import ApiService from "../../../src/services/api.service"
 
-
-
 describe('Api service spec', () => {
   const api = new ApiService();
   const testUser = {

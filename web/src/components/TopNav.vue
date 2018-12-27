@@ -1,10 +1,10 @@
 <template>
   <div class="top-nav">
     <router-link to="/"><img class="logo__img" src="../../static/logo_stub.png" alt="logo"></router-link>
-    <el-dropdown v-show="loginName">
+    <el-dropdown v-show="email">
       <div class="trigger">
         <i class="el-icon-setting" style="margin-right: 8px"></i>
-        <span>{{loginName}}</span>
+        <span>{{email}}</span>
       </div>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item @click.native="logoutMe">Log out</el-dropdown-item>
@@ -20,7 +20,7 @@ export default {
   name: 'TopApp',
   data() {
     return {
-      loginName: ''
+      email: ''
     };
   },
 
@@ -33,13 +33,13 @@ export default {
             type: 'success'
           });
           this.$router.push('login');
-          this.loginName = '';
+          this.email = '';
         }
       });
     },
     getLoginName() {
       const creads = JSON.parse(getUserCreds());
-      this.loginName = creads === null ? '' : creads.login;
+      this.email = creads === null ? '' : creads.email.replace(/@.+/g, '');
     }
   },
   watch: {

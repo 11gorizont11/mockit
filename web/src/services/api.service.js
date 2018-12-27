@@ -1,9 +1,7 @@
 import axios from 'axios';
-// TODO: make HttpClient
 
 const env = process.env.NODE_ENV;
-console.log("env", process.env);
-console.log("HOSt api", "http://docker.for.mac.localhost:4000")
+
 export default class ApiService {
   constructor(options = {}) {
     this.apiUrl = env === 'development' ? '/api' : "http://docker.for.mac.localhost:4000";
@@ -65,7 +63,7 @@ export default class ApiService {
     );
   }
 
-  login = async ({ login, password }) => this.post("/auth/login", { login, password }).then(data => { this.setUserCreds({ ...data, login }) })
+  login = async ({ email, password }) => this.post("/auth/login", { email, password }).then(data => { this.setUserCreds({ ...data, email }) })
 
   signUp = async ({ login, email, password }) => this.post('/auth/sign-up', { login, email, password }).then((data) => this.setUserCreds({ ...data, login }))
 
@@ -87,6 +85,7 @@ export default class ApiService {
     this.token = creds.token;
     this.refreshToken = creds.refreshToken;
   }
+  
   getUserCreds = () => JSON.parse(localStorage.getItem('mockitUserCreds'))
 
   removeCreds = () => {

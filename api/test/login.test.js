@@ -21,7 +21,7 @@ describe('Login spec', () => {
   });
 
   after(async () => {
-    await UserModel.deleteOne({ login: testUser.login });
+    await UserModel.deleteOne({ email: testUser.email });
     await TokenModel.deleteOne({ token: refreshToken });
   });
 
@@ -30,7 +30,7 @@ describe('Login spec', () => {
       .request(server)
       .post(LOGIN_URL)
       .send({
-        login: testUser.login,
+        email: testUser.email,
         password: testUser.password
       })
       .then(res => {

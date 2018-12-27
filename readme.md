@@ -2,7 +2,7 @@
 
 ### Setup services:
 ```bash
-docker-compose up build db api
+docker-compose up db api
 ```
 ### Run web:
 
