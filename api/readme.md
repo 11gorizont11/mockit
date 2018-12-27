@@ -1,6 +1,6 @@
 ## Just simple mock api service.
 
-#### scripts for pun project:
+#### scripts for run project:
 
 ## Before you start run db service
 
