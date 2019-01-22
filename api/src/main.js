@@ -1,6 +1,6 @@
 import Koa from 'koa';
 import Router from 'koa-router';
-import logger from 'koa-logger';
+import koaLogger from 'koa-logger';
 import bodyParser from 'koa-bodyparser';
 import jwtMiddleware from 'koa-jwt';
 import respond from 'koa-respond';
@@ -16,6 +16,8 @@ import newRouteHandler from './services/newRoute.service';
 import deleteRouteHandler from './services/deleteRoute.service';
 import renewRoutes from './services/renewRoutes.service';
 
+import logger from './services/helper/logger';
+
 const app = new Koa();
 const subdomain = new Subdomain();
 const router = new Router();
@@ -26,13 +28,24 @@ require('./db/connection');
 const env = process.env.NODE_ENV;
 
 if (env === 'development') {
-  app.use(logger());
+  app.use(koaLogger());
 }
 
 if (env !== 'production') {
   // for proper subdomain detection fix fot localhost:port
   app.subdomainOffset = 1;
 }
+
+// for centralized error handling
+app.use(async (ctx, next) => {
+  try {
+    await next();
+  } catch (err) {
+    ctx.status = err.status || 500;
+    ctx.body = err.message;
+    ctx.app.emit('error', err, ctx);
+  }
+});
 
 app
   .use(
@@ -49,6 +62,7 @@ app
 
 router.get('/', ctx => {
   ctx.body = 'Hello from mockit API!!!';
+  logger.trace(ctx.body);
 });
 
 
@@ -76,9 +90,13 @@ app
   .use(router.routes())
   .use(router.allowedMethods());
 
+  app.on('error', (err, ctx) => {
+    logger.error(err);
+  });
+  
 app.proxy = true;
 
 export const server = app.listen(config.get('HTTP_PORT'), () => {
   renewRoutes(subdomain);
-  console.log(`Server listening on port: ${config.get('HTTP_PORT')}`);
+  logger.info(`Server listening on port: ${config.get('HTTP_PORT')}`);
 });
