@@ -30,6 +30,36 @@ log4js.configure(
   }
 );
 
-const logger = log4js.getLogger("Stubs_Api");
+function time(start) {
+  const duration = Date.now() - start;
+  return duration < 1000 ? `${duration}ms` : `${Math.round(duration / 1000)}s`;
+}
 
-export default logger;
+export const logger = log4js.getLogger("Stubs_Api");
+
+export const loggerKoa = async (ctx, next) => {
+  const {originalUrl, method, request, res} = ctx;
+  const start = Date.now();
+
+  const requestBody = request.body || 'empty';
+  logger.trace(`--> ${originalUrl} ${method} ${JSON.stringify(requestBody)}`);
+  
+  try {
+    await next();
+  } catch(err) {
+    logger.error(err.message);
+    throw err;
+  }
+
+  function done (eventName) {
+    // remove listeners
+    res.removeListener(eventName, done);
+    // log response is finished or closed;
+    const responseBody = ctx.body || '';
+
+    logger.trace(`<-- ${ctx.originalUrl} ${ctx.status} ${JSON.stringify(responseBody)} ${time(start)}`);
+  }
+
+  res.once('finish', ()=> done('finish'));
+  res.once('close', ()=> done('close'));
+}
