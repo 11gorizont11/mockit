@@ -1,6 +1,5 @@
 import Koa from 'koa';
 import Router from 'koa-router';
-import logger from 'koa-logger';
 import bodyParser from 'koa-bodyparser';
 import jwtMiddleware from 'koa-jwt';
 import respond from 'koa-respond';
@@ -16,6 +15,8 @@ import newRouteHandler from './services/newRoute.service';
 import deleteRouteHandler from './services/deleteRoute.service';
 import renewRoutes from './services/renewRoutes.service';
 
+import {loggerKoa, logger} from './services/helper';
+
 const app = new Koa();
 const subdomain = new Subdomain();
 const router = new Router();
@@ -24,10 +25,6 @@ const router = new Router();
 require('./db/connection');
 
 const env = process.env.NODE_ENV;
-
-if (env === 'development') {
-  app.use(logger());
-}
 
 if (env !== 'production') {
   // for proper subdomain detection fix fot localhost:port
@@ -44,7 +41,9 @@ app
         ctx.throw(422, 'body parse error');
       }
     })
-  ).use(cors())
+  )
+  .use(loggerKoa)
+  .use(cors())
   .use(respond());
 
 router.get('/', ctx => {
@@ -80,5 +79,5 @@ app.proxy = true;
 
 export const server = app.listen(config.get('HTTP_PORT'), () => {
   renewRoutes(subdomain);
-  console.log(`Server listening on port: ${config.get('HTTP_PORT')}`);
+  logger.info(`Server listening on port: ${config.get('HTTP_PORT')}`);
 });
