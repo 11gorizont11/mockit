@@ -1,10 +1,6 @@
 import RouteModel from '../../models/Route';
 import { logger } from './logger';
 
-async function sleep(ms) {
-  return new Promise((resolve)=> setTimeout(resolve(), ms));
-}
-
 const handler = async (ctx) => {
   const { method, url, hostname } = ctx;
   const host = hostname.replace(/.(\w*)$/, '');
@@ -27,8 +23,6 @@ const handler = async (ctx) => {
       ctx.set(header.key, header.value);
     });
   }
-
-  await sleep(2000);
 
   ctx.status = statusCode;
   ctx.body = JSON.parse(body);
