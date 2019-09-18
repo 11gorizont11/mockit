@@ -1,10 +1,11 @@
 import axios from 'axios';
 
 const env = process.env.NODE_ENV;
+console.log("TCL: process.env.API_URL", process.env.API_URL);
 
 export default class ApiService {
   constructor(options = {}) {
-    this.apiUrl = env === 'development' ? '/api' : "http://docker.for.mac.localhost:4000";
+    this.apiUrl = env === 'development' ? '/api' : `${process.env.API_URL}:4000`;
     this.client = options.client || axios.create();
     this.token = options.token;
     this.refreshToken = options.refreshToken;
@@ -81,6 +82,7 @@ export default class ApiService {
   delete = async (url, payload) => this.client.delete(this.apiUrl + url, { data: payload }).then(({ data }) => data);
 
   setUserCreds = (creds) => {
+    console.log("TCL: setUserCreds -> creds", creds);
     localStorage.setItem('mockitUserCreds', JSON.stringify(creds))
     this.token = creds.token;
     this.refreshToken = creds.refreshToken;

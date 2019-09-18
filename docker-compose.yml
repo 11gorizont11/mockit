@@ -1,6 +1,30 @@
 version: '3.7'
 
 services:
+  db:
+    image: mongo
+    networks: 
+      - backend
+    volumes:
+      - mongo-data:/data/db
+    hostname: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile.dev
+    networks:
+      - backend
+    ports:
+      - '4000:4000'
+    depends_on:
+      - db
+    links:
+      - db
+    environment:
+      - MONGO_URL=mongodb://db
   web:
     build:
       context: ./web
@@ -13,20 +37,9 @@ services:
     links:
       - api
     environment:
-      API_HOST: api
-  api:
-    build:
-      context: ./api
-      dockerfile: Dockerfile.dev
-    ports:
-      - '4000:4000'
-    depends_on:
-      - db
-    links:
-      - db
-  db:
-    image: mongo
-    hostname: mongo
-    restart: always
-    ports:
-      - '27017:27017'
+      - API_URL=api
+volumes:
+  mongo-data:
+networks:
+  backend:
+    driver: overlay

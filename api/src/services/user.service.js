@@ -4,6 +4,7 @@ import tokenGenerator from './helper/tokenGenerator';
 
 const createUser = async (ctx, next) => {
   const { login, email, password } = ctx.request.body;
+  console.log("TCL: createUser -> login, email, password", login, email, password)
   if (!login || !email || !password) {
     return ctx.badRequest({
       message: 'Invalid credentials.'
