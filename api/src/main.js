@@ -15,7 +15,7 @@ import newRouteHandler from './services/newRoute.service';
 import deleteRouteHandler from './services/deleteRoute.service';
 import renewRoutes from './services/renewRoutes.service';
 
-import {loggerKoa, logger} from './services/helper';
+import { loggerKoa, logger } from './services/helper';
 
 const app = new Koa();
 const subdomain = new Subdomain();
@@ -26,10 +26,9 @@ require('./db/connection');
 
 const env = process.env.NODE_ENV;
 
-if (env !== 'production') {
-  // for proper subdomain detection fix fot localhost:port
-  app.subdomainOffset = 1;
-}
+
+// FIXME: for proper subdomain detection fix fot localhost:port
+app.subdomainOffset = 1;
 
 app
   .use(

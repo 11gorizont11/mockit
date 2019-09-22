@@ -2,9 +2,8 @@ import mongoose from 'mongoose';
 import config from 'config';
 
 const env = process.env.NODE_ENV;
-console.log("TCL: process.env.MONGO_URL", process.env.MONGO_URL);
 
-const connectUrl = env !== 'production' ? config.get(`${env}.MONGO_URL`) : `${process.env.MONGO_URL}:27017/mockit-api-prod`;
+const connectUrl = env !== 'production' ? config.get(`${env}.MONGO_URL`) : `mongodb://${process.env.MONGO_URL}/mockit-api-prod`;
 
 mongoose.Promise = Promise;
 

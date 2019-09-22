@@ -1,11 +1,10 @@
 import axios from 'axios';
 
 const env = process.env.NODE_ENV;
-console.log("TCL: process.env.API_URL", process.env.API_URL);
 
 export default class ApiService {
   constructor(options = {}) {
-    this.apiUrl = env === 'development' ? '/api' : `${process.env.API_URL}:4000`;
+    this.apiUrl = env === 'development' ? '/api' : `${process.env.API_URL}`;
     this.client = options.client || axios.create();
     this.token = options.token;
     this.refreshToken = options.refreshToken;
@@ -87,7 +86,7 @@ export default class ApiService {
     this.token = creds.token;
     this.refreshToken = creds.refreshToken;
   }
-  
+
   getUserCreds = () => JSON.parse(localStorage.getItem('mockitUserCreds'))
 
   removeCreds = () => {

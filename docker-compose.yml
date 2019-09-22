@@ -14,7 +14,7 @@ services:
   api:
     build:
       context: ./api
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     networks:
       - backend
     ports:
@@ -24,7 +24,7 @@ services:
     links:
       - db
     environment:
-      - MONGO_URL=mongodb://db
+      - MONGO_URL=db
   web:
     build:
       context: ./web
@@ -37,9 +37,9 @@ services:
     links:
       - api
     environment:
-      - API_URL=api
+      - NODE_ENV='production'
+      - API_URL='http://api:4000/',
 volumes:
   mongo-data:
 networks:
   backend:
-    driver: overlay
